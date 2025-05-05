@@ -1,0 +1,38 @@
+# === GLOBAL IGNORE RULES ===
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# === GENERAL PROJECT FILES ===
+.env
+node_modules/
+dist/
+build/
+
+# === CLIENT FOLDER ===
+client/node_modules/
+client/.env*
+client/dist/
+client/build/
+
+# === SERVER FOLDER ===
+server/node_modules/
+server/.env*
+server/dist/
+server/build/
+
+# === IDE/EDITOR FILES ===
+.vscode/
+.idea/
+
+# === COVERAGE & TEST OUTPUT ===
+coverage/
+*.lcov

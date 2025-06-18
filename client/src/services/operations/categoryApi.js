@@ -1,6 +1,6 @@
 import { category } from "../api"
 import { apiConnector } from "../apiConnector";
-import {toast} from 'sonner'
+import { ToastContainer, toast } from 'react-toastify';
 
 const {
     CREATECATEGORY_API,
@@ -9,30 +9,48 @@ const {
     CATEGORYPAGEDETAILS_API
 } = category;
 
-export async function createCategory(name , description){
+export async function createCategory(name,token){
         try{
-           const response = await apiConnector("POST",CREATECATEGORY_API,{name,description});
+           const response = await apiConnector("POST",CREATECATEGORY_API,{name,token},{Authorization:`Bearer${token}`})
            console.log("CreateCategory API RESPONSE...........", response)
            if(!response.data.success){
               throw new Error("cant create the categoty");
            }
-           toast("Category created");
+           toast("Category created",{theme:"dark",autoClose:1000});
+        
+           return response;
         }catch(error){
             console.log(error.message);
-            toast("cant create the categoty");
+            toast("cant create the categoty",{theme:"dark",autoClose:1000});
         }
-}
 
-export async function deleteCategory(name){
+}
+export async function showAllCategory(){
     try{
-        const response = await apiConnector("POST",DELETECATEGORY_API,{name});
+        const response = await apiConnector("GET",SHOWALLCATEGORY_API);
+        if(!response.data.success){
+           throw new Error("cant fetch the categoty");
+        }
+         toast("Category fetched",{theme:"dark",autoClose:1000});
+        return response;
+    }catch(error){
+        console.log(error.message);
+       toast("Category cannot fetched",{theme:"dark",autoClose:1000});
+    }
+}
+export async function deleteCategory(name,token){
+    try{
+        console.log("1")
+        const response = await apiConnector("POST","http://localhost:4000/api/v1/category/deletecategory",{name},{ Authorization: `Bearer ${token}` }
+);
         console.log("DELTE_Category API RESPONSE...........", response)
         if(!response.data.success){
            throw new Error("cant delete the categoty");
         }
-        toast("Category delete");
+        toast("Category delete",{theme:"dark",autoClose:1000});
+        return response;
      }catch(error){
          console.log(error.message);
-         toast("cant delete the categoty");
+         toast("cant delete the categoty",{theme:"dark",autoClose:1000});
      }
 }

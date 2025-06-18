@@ -8,7 +8,7 @@ const {auth,isAdmin} = require("../middlewares/auth");
 router.post("/createcategory" ,auth , isAdmin ,createCategory);
 router.post("/deletecategory" ,auth , isAdmin ,deleteCategory);
 router.post("/findCategory" ,auth , isAdmin ,findCategory);
-router.post("/showallcategory",showAllCategory)
+router.get("/showallcategory",showAllCategory)
 router.post("/categorypagedetails" ,categoryPageDetails);
 
 module.exports = router;

@@ -1,7 +1,7 @@
-import { product } from "../api"
+import { product } from "../api";
 import { apiConnector } from "../apiConnector";
-import {toast} from 'sonner'
-import {setLoading ,setProduct} from '../../slice/productSlice';
+import { toast } from "sonner";
+import { setLoading, setProduct } from "../../slice/productSlice";
 const {
     CREATEPRODUCT_API,
     GETALLPRODUCT_API,
@@ -10,23 +10,28 @@ const {
 } = product;
 
 
-export function createProduct(name, description, price, stock, category,tag,images ){
-    return async(disptach)=>{
-        disptach(setLoading(true));
-        try{
-            const response = await apiConnector("POST",CREATEPRODUCT_API,{name, description, price, stock, category,tag,images});
-            console.log("PRODUCTCREATION API RESPONSE...........", response)
+export function createProduct(formData, token) {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        try {
+            const response = await apiConnector("POST", CREATEPRODUCT_API, formData, {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+            });
+            
             if (!response.data.success) {
                 throw new Error(response.data.message);
             }
-            toast('product created');
-        }catch(error){
-            console.log("SIGNUP API ERROR...", error);
-            toast("Could Not Create product");
+            console.log("CREATE PRODUCT RESPONSE:", response);
+            toast("Product created");
+        } catch (error) {
+            console.error("CREATE PRODUCT ERROR:", error);
+            toast("Could not create product");
         }
-        disptach(setLoading(true));
-    }
+        dispatch(setLoading(false));
+    };
 }
+
 
 export function getAllProducts() {
     return async (dispatch) => {

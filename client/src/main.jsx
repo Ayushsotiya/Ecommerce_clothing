@@ -8,10 +8,12 @@ import { Provider } from "react-redux";
 import  authSlice  from "@/slice/authSlice";
 import { Toaster } from "@/components/ui/sonner"
 import  profileSlice  from "@/slice/profileSlice";
+import productSlice from "@/slice/productSlice";
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     profile : profileSlice,
+    product: productSlice,
   }
 })
 createRoot(document.getElementById('root')).render(

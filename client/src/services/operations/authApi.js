@@ -12,7 +12,8 @@ const { SENTOTP_API,
     RESETPASSTOKEN_API,
     RESETPASSWORD_API,
     ADDADDRESS_API,
-    GETADDRESS_API
+    GETADDRESS_API,
+    PROFILEUPDATE_API,
 } = auth;
 
 
@@ -167,5 +168,25 @@ export async function getAddress(token) {
     } catch (error) {
         console.log("failed to get address");
         console.log(error.message);
+    }
+}
+
+export  function profileUpdate(data){
+    return async (dispatach)=>{
+        try{
+        const Name =data.name;
+        const email = data.email;
+        const phoneNo =data.phoneNo
+           const response = await apiConnector("POST" ,PROFILEUPDATE_API,{Name, email,phoneNo});
+           if(!response.data.success){
+             throw new Error("Can update the profile data");
+           }
+           console.log("RESPONSE OF THE PROFILE UPDATE DATA =>",response);
+           toast('profile data is updated');
+        }catch(error){
+            console.log(error.message);
+            toast("Cant update the profile data");
+        }
+        dispatach(setLoading(true));
     }
 }

@@ -11,6 +11,7 @@ const Product = () => {
       stock: 120,
       status: 'In Stock',
       reviewer: 'John Doe',
+      image: 'https://via.placeholder.com/60?text=Mouse',
     },
     {
       id: 2,
@@ -21,6 +22,7 @@ const Product = () => {
       stock: 80,
       status: 'Low Stock',
       reviewer: 'Jane Smith',
+      image: 'https://via.placeholder.com/60?text=Mat',
     },
     {
       id: 3,
@@ -31,55 +33,83 @@ const Product = () => {
       stock: 45,
       status: 'In Stock',
       reviewer: 'Assign reviewer',
+      image: 'https://via.placeholder.com/60?text=Lamp',
+    },
+    {
+      id: 4,
+      name: 'LED Table Lamp1',
+      description: 'Dimmable study lamp with USB charging1',
+      category: 'Home Decor1',
+      price: '₹1,2994',
+      stock: 40,
+      status: 'In Stock',
+      reviewer: 'Assign reviewer',
+      image: 'https://via.placeholder.com/60?text=Lamp+1',
     },
   ];
 
   return (
-    <div className="mt-28 px-6  text-white flex flex-col gap-y-10 items-center bg-black  w-fit h-fit  ml-32 border border-specialGrey rounded-lg">
-      <h1 className="text-4xl font-semibold text-white mt-11">Product Inventory</h1>
-
-      <div className="w-full max-w-7xl overflow-x-auto rounded-xl shadow-lg border border-[#797878] bg-[#1c1c1e] my-12">
-        <table className="min-w-full text-sm text-white">
-          <thead className="bg-[#2c2c2e] text-left text-xs font-medium uppercase tracking-wider text-gray-400">
+    <div className="px-6 w-full mt-16 bg-black text-white">
+      <h1 className="text-4xl font-semibold mb-8 my-8">Product Inventory</h1>
+      <div>Welcome back!</div>
+      <div className="w-full max-w-7xl mx-5 bg-[#1c1c1e] border border-[#797878] rounded-2xl shadow-lg overflow-x-auto">
+        <table className="min-w-full table-auto text-sm text-left text-white">
+          <thead className="bg-black text-gray-400 text-xs uppercase font-semibold tracking-wider">
             <tr>
-              <th className="py-4 px-4">Name</th>
-              <th className="py-4 px-4">Description</th>
-              <th className="py-4 px-4">Category</th>
-              <th className="py-4 px-4">Price</th>
-              <th className="py-4 px-4">Stock</th>
-              <th className="py-4 px-4">Status</th>
-              <th className="py-4 px-4">Reviewer</th>
-              <th className="py-4 px-4">Actions</th>
+              <th className="px-6 py-3">Name</th>
+              <th className="px-6 py-3">Image</th>
+              <th className="px-6 py-3">Description</th>
+              <th className="px-6 py-3">Category</th>
+              <th className="px-6 py-3">Price</th>
+              <th className="px-6 py-3">Stock</th>
+              <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">Reviewer</th>
+              <th className="px-6 py-3 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#797878]">
+          <tbody className="divide-y divide-[#575656]">
             {products.map((product) => (
-              < tr
+              <tr
                 key={product.id}
-                className="hover:bg-[#2e2e30]  bg-black transition-colors"
+                className="hover:bg-[#171718] transition-colors"
               >
-                <td className="py-3 px-4 whitespace-nowrap">{product.name}</td>
-                <td className="py-3 px-4 max-w-xs truncate text-gray-300">{product.description}</td>
-                <td className="py-3 px-4">{product.category}</td>
-                <td className="py-3 px-4">{product.price}</td>
-                <td className="py-3 px-4">{product.stock}</td>
-                <td className="py-3 px-4">
+                <td className="px-6 py-3">{product.name}</td>
+
+                <td className="px-6 py-3">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-12 h-12 rounded-md object-cover"
+                  />
+                </td>
+
+                <td className="px-6 py-3 max-w-xs truncate text-gray-300">
+                  {product.description}
+                </td>
+
+                <td className="px-6 py-3">{product.category}</td>
+                <td className="px-6 py-3">{product.price}</td>
+                <td className="px-6 py-3">{product.stock}</td>
+
+                <td className="px-6 py-3">
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                    className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
                       product.status === 'In Stock'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-green-300/10 text-green-400'
+                        : 'bg-yellow-300/10 text-yellow-400'
                     }`}
                   >
                     {product.status}
                   </span>
                 </td>
-                <td className="py-3 px-4">{product.reviewer}</td>
-                <td className="py-3 px-4 space-x-2">
-                  <button className="bg-white text-black font-semibold px-4 py-1.5 rounded-lg hover:bg-yellow-500 transition">
+
+                <td className="px-6 py-3">{product.reviewer}</td>
+
+                <td className="px-6 py-3 text-center space-x-2 flex flex-row gap-x-2">
+                  <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium px-4 py-1.5 rounded-xl transition-all">
                     Edit
                   </button>
-                  <button className="bg-red-500 text-black font-semibold px-4 py-1.5 rounded-lg hover:bg-red-500 transition">
+                  <button className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-1.5 rounded-xl transition-all">
                     Delete
                   </button>
                 </td>

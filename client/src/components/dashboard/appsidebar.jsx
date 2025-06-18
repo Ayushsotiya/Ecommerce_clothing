@@ -40,9 +40,14 @@ const adminItems = {
       icon: BarChart3,
     },
     {
-      title: "Category",
+      title: "Product Category",
       url: "/dashboard/admin/category",
       icon: Search,
+    },
+    {
+      title: "Add Product",
+      url: "/dashboard/admin/add-product",
+      icon: Package,
     },
     {
       title: "Products",
@@ -59,8 +64,6 @@ const adminItems = {
       url: "/dashboard/admin/customer",
       icon: UsersRound,
     },
-    
-    
   ],
 };
 
@@ -97,8 +100,9 @@ export default function AppSidebar() {
   const itemsToRender = type === "Admin" ? adminItems.main : userItems.main;
 
   return (
-    <Sidebar className="w-56 h-[93.5%] mt-[62px] bg-black text-white flex flex-col border-r border-specialGrey z-0">
-      <SidebarHeader className="px-4 py-4">
+    
+      <Sidebar className="w-56 h-full  bg-black text-white flex flex-col border-r border-specialGrey z-0">
+      <SidebarHeader className="px-4 py-4 mt-20">
         <div className="text-xl font-bold text-white flex gap-2 items-center">
           <LayoutDashboard />
           <span>DashBoard</span>
@@ -136,5 +140,6 @@ export default function AppSidebar() {
         <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
+
   );
 }

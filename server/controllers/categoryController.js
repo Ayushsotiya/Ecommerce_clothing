@@ -4,9 +4,9 @@ const Category = require('../models/Category');
 // working
 exports.createCategory = async (req, res) => {
     try {
-        const { name, description } = req.body;
-
-        if (!name || !description) {
+        const { name } = req.body;
+         
+        if (!name ) {
             return res.status(400).json({
                 success: false,
                 message: "please provide all the fields"
@@ -20,11 +20,18 @@ exports.createCategory = async (req, res) => {
             })
         }
 
-        const category = await Category.create({ name: name, description: description });
+        const category = await Category.create({ name: name});
+        const response = await Category.find({}, { name: true });
+        if (!category) {
+            return res.status(500).json({
+                success: false,
+                message: "failed to create category"
+            })
+        }
         return res.status(200).json({
             success: true,
             message: "category is created",
-            category
+            response
         })
     } catch (error) {
         return res.status(500).json({
@@ -66,25 +73,33 @@ exports.findCategory = async (req, res) => {
 }
 exports.deleteCategory = async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name} = req.body;
 
-        if (!name || !description) {
+        if (!name ) {
             return res.status(400).json({
                 success: false,
                 message: "please provide all the fields"
             })
         }
-        const check = await Category.findOne({ name: name, description: description });
+        const check = await Category.findOne({ name: name });
         if (!check) {
             return res.status(500).json({
                 success: false,
                 message: "this category is not present"
             })
         }
-        const deleted = await Category.findOneAndDelete({ name: name, description: description }, { new: true });
+        const deleted = await Category.findOneAndDelete({ name: name }, { new: true });
+        const finalResponse = await Category.find({}, { name: true });
+        if (!deleted) {
+            return res.status(500).json({
+                success: false,
+                message: "failed to delete category"
+            })
+        }
         return res.status(200).json({
             success: true,
             message: "category is deleted",
+            finalResponse,
         })
     } catch (error) {
         return res.status(500).json({
@@ -96,7 +111,7 @@ exports.deleteCategory = async (req, res) => {
 // working
 exports.showAllCategory = async (req, res) => {
     try {
-        const allCategories = await Category.find({}, { name: true, description: true });
+        const allCategories = await Category.find({}, { name: true });
         if (!allCategories) {
             return res.status(500).json({
                 success: false,

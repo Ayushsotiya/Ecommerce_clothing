@@ -1,5 +1,5 @@
 import React from "react"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { Upload } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { profileUpdate } from "../../services/operations/authApi"
 
 const Profile = () => {
+  const dispatch = useDispatch()
   const {
     handleSubmit,
     register,
@@ -16,22 +18,22 @@ const Profile = () => {
     reset,
   } = useForm()
 
-  const { user } = useSelector((state) => state.profile)
+  const { user, loading } = useSelector((state) => state.profile)
   const type = user?.type || "User"
   const userInitial = user?.name?.charAt(0) || "U"
 
   const onSubmit = (data) => {
-    const file = data.image?.[0]
     console.log("Form Data:", data)
-    if (file) {
-      console.log("Selected file:", file)
-    }
-
+    dispatch(profileUpdate(data.name, data.email, data.phoneNo))
     reset()
   }
 
+  if (loading) {
+    return <div>Loading ...</div>
+  }
+
   return (
-    <div className="container max-w-4xl mx-60  my-auto py-10">
+    <div className="container max-w-4xl mx-60 my-auto py-10">
       <Card className="border-zinc-800 bg-zinc-950 text-zinc-100">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{`${type} Profile`}</CardTitle>
@@ -54,7 +56,9 @@ const Profile = () => {
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-lg font-medium text-white border-b border-zinc-800 pb-2">Personal Information</h3>
+              <h3 className="text-lg font-medium text-white border-b border-zinc-800 pb-2">
+                Personal Information
+              </h3>
 
               {/* User Info Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,7 +66,7 @@ const Profile = () => {
                   <Label htmlFor="name" className="text-white">Full Name</Label>
                   <Input
                     id="name"
-                    placeholder={user.Name}
+                    placeholder={user.name}
                     className="bg-black border-zinc-800 focus-visible:ring-white"
                     {...register("name", { required: "Name is required" })}
                   />
@@ -107,7 +111,7 @@ const Profile = () => {
               </div>
 
               {/* Submit Button */}
-              <Button type="submit" className="bg-black hover:bg-white hover:text-black text-white font-medium">
+              <Button type="submit" className="bg-white hover:bg-specialGrey hover:text-black text-black font-medium">
                 Save Changes
               </Button>
             </div>

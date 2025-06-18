@@ -4,9 +4,9 @@ const { uploadImage } = require("../utils/imageUploader");
 // working
 exports.createProduct = async (req, res) => {
     try {
-        const { name, description, price, stock, category, tag } = req.body;
+        const { name, description, price, stock, category, tags } = req.body;
         const images = req.files?.image;
-        if (!name || !description || !price || !stock || !category || !images) {
+        if (!name || !description || !price || !stock || !category || !images || !tags) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all the required fields",
@@ -19,8 +19,9 @@ exports.createProduct = async (req, res) => {
                 message: "Unauthorized: Only admins can create products",
             });
         }
+        const tagsArray = typeof tags === 'string' ? tags.split(",").map(t => t.trim()) : tags;
         const categoryName = category.trim(); // remove whitespace
-        const categoryDetails = await Category.findOne({ name: new RegExp(`^${categoryName}$`, 'i') }); // case insensitive
+        const categoryDetails = await Category.findOne({ name: new RegExp(`^${categoryName}$`, 'i') }); 
         if (!categoryDetails) {
             return res.status(400).json({
                 success: false,
@@ -53,7 +54,7 @@ exports.createProduct = async (req, res) => {
             stock,
             images: imageUrls,
             category: categoryDetails._id,
-            tag: tag
+            tags: tagsArray
         });
         await Category.findOneAndUpdate({ name: category }, { $push: { product: product._id } }, { new: true })
 

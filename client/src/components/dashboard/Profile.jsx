@@ -66,7 +66,7 @@ const Profile = () => {
                   <Label htmlFor="name" className="text-white">Full Name</Label>
                   <Input
                     id="name"
-                    placeholder={user.name}
+                    placeholder={user.Name}
                     className="bg-black border-zinc-800 focus-visible:ring-white"
                     {...register("name", { required: "Name is required" })}
                   />

@@ -5,7 +5,7 @@ const {auth,isAdmin} = require("../middlewares/auth");
 
 
 router.post("/createproduct" ,auth , isAdmin ,createProduct);
-router.post("/getallproduct",getAllProducts)
+router.get("/getallproduct",getAllProducts)
 router.post("/updateproduct" ,auth , isAdmin ,updateProduct);
-router.post("/deleteproduct" ,auth , isAdmin ,deleteProduct);
+router.delete("/deleteproduct" ,auth , isAdmin ,deleteProduct);
 module.exports = router;

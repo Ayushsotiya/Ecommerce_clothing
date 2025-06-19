@@ -6,6 +6,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Shop from "./pages/Shop";
 import NavBar from './components/common/NavBar';
 import Otp from "./pages/Otp";
 import NotFound from './pages/NotFound';
@@ -25,6 +26,7 @@ import { useSelector } from 'react-redux';
 import ResetPassword from "./pages/ResetPasssword"
 import AddProduct from "./components/dashboard/admin/createProduct"
 import { useLocation } from "react-router-dom";
+
 function App() {
   const { user } = useSelector((state) => state.profile)
   const location = useLocation();
@@ -36,10 +38,12 @@ function App() {
         <Route path="/" element={<Home></Home>}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/contact" element={<Contact />}></Route>
+        <Route path="/shop" element={<Shop/>}></Route>
         <Route path="/login" element={<OpenRoute><Login /></OpenRoute>}></Route>
         <Route path="/signup" element={<OpenRoute><Signup /></OpenRoute>}></Route>
         <Route path="/verify-email" element={< OpenRoute> <Otp /></OpenRoute>}></Route>
         <Route path="/reset-password" element={<OpenRoute><ResetPassword /></OpenRoute>}></Route>
+        
         <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>}>
           {user?.type === 'Admin' ? (
             <>

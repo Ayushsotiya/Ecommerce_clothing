@@ -61,8 +61,8 @@ const Category = () => {
     return <div>Loading</div>
   }
 return (
-  <div className="h-[90%] bg-black mx-[23%] mt-10 text-white flex justify-center py-10 px-4">
-    <div className="w-full max-w-3xl bg-[#0f0f0f] rounded-xl border border-[#2a2a2a] p-8">
+  <div className="mx-auto bg-black min-h-fit my-auto text-white flex justify-center py-10 px-10">
+    <div className="w-full max-w-3xl bg-[#0f0f0f] rounded-xl border border-[#2a2a2a] p-8 ">
       <h1 className="text-3xl font-semibold mb-6">Manage Categories</h1>
 
       {/* Add Category */}
@@ -101,10 +101,7 @@ return (
             >
               <p className="text-white text-sm">{cat.name}</p>
               <div className="flex gap-3 text-gray-400">
-                <Pencil
-                  size={18}
-                  className="cursor-pointer hover:text-white transition"
-                />
+                
                 <Trash2
                   size={18}
                   className="cursor-pointer hover:text-red-500 transition"

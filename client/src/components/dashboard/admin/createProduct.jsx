@@ -9,6 +9,7 @@ import ImageUploader from "./ImageUploader";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { createProduct } from "../../../services/operations/productApi"
+import { SyncLoader } from "react-spinners";
 const AddProduct = () => {
   const {
     register,
@@ -68,11 +69,15 @@ const AddProduct = () => {
   };
 
   if (loading) {
-    return <div className="text-white text-center mt-10">Loading...</div>
+    return (
+    <div className="flex justify-center items-center mx-auto text-white">
+      <SyncLoader color="#FFFFFF" />
+    </div>
+    )
   }
 
   return (
-    <div className="min-h-screen mt-10 ml-[25%] bg-black text-white p-10">
+    <div className="min-h-screen min-w-[40%] mx-auto bg-black text-white p-10 mt-20">
       <h2 className="text-3xl font-bold mb-8 border-b border-zinc-800 pb-4">
         Add New Product
       </h2>

@@ -83,8 +83,9 @@ exports.getAllProducts = async (req, res) => {
                 image: true,
                 stock: true,
                 category: true,
-            }).populate("category")
-            .exec();
+                tags:true,
+                images:true,
+            }).populate("category").exec();
         return res.status(200).json({
             success: true,
             message: "all products fetched",
@@ -153,8 +154,8 @@ exports.deleteProduct = async (req, res) => {
             })
         }
 
-        const deletedProductawait = await Product.findByIdAndDelete(productId);
-        if (!deletedProductawait) {
+        const deletedProduct = await Product.findByIdAndDelete(productId);
+        if (!deletedProduct) {
             return res.status(404).json({ // Use 404 if product not found
                 success: false,
                 message: "Product not found or already deleted."
@@ -163,7 +164,8 @@ exports.deleteProduct = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "The product is deleted"
+            message: "The product is deleted",
+            deletedProduct
         })
 
     } catch (error) {

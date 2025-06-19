@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "react-dropzone": "^14.3.8",
+    "react-hot-toast": "^2.5.2",
+    "react-spinners": "^0.17.0",
     "react-toastify": "^11.0.5"
   }
 }

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: false,
-  product: localStorage.getItem("products")
+  products: localStorage.getItem("products")
     ? JSON.parse(localStorage.getItem("products"))
     : [],
 };
@@ -15,11 +15,21 @@ const productSlice = createSlice({
       state.loading = action.payload;
     },
     setProduct: (state, action) => {
-      state.product = action.payload;
+      state.products = action.payload;
       localStorage.setItem("products", JSON.stringify(action.payload));
+    },
+    addProduct: (state, action) => {
+      state.products.push(action.payload);
+      localStorage.setItem("products", JSON.stringify(state.products));
+    },
+    deleteproduct: (state, action) => {
+      state.products = state.products.filter(
+        (product) => product._id !== action.payload
+      );
+      localStorage.setItem("products", JSON.stringify(state.products));
     },
   },
 });
 
 export default productSlice.reducer;
-export const { setLoading, setProduct } = productSlice.actions;
+export const { setLoading, setProduct,addProduct,deleteproduct } = productSlice.actions;

@@ -58,20 +58,17 @@ export const fetchAllProducts = () => {
 };
 
 // Update Product
-export function updateProduct(productId, formData, token) {
+export function updateProduct( data, token) {
   return async (dispatch) => {
     dispatch(setLoading(true));
+    console.log(data, "FORM DATA IN UPDATE PRODUCT");
     try {
-      // Append productId to formData if needed
-      formData.append("productId", productId);
-
       const response = await apiConnector(
-        "PUT",
+        "POST",
         UPDATEPRODUCT_API,
-        formData, // send FormData directly
+        data, // send FormData directly
         {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data", // important
         }
       );
 

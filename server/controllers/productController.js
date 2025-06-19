@@ -1,6 +1,6 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
-const { uploadImage } = require("../utils/imageUploader");
+const { uploadImage, deleteImage } = require("../utils/imageUploader");
 // working
 exports.createProduct = async (req, res) => {
     try {
@@ -21,7 +21,7 @@ exports.createProduct = async (req, res) => {
         }
         const tagsArray = typeof tags === 'string' ? tags.split(",").map(t => t.trim()) : tags;
         const categoryName = category.trim(); // remove whitespace
-        const categoryDetails = await Category.findOne({ name: new RegExp(`^${categoryName}$`, 'i') }); 
+        const categoryDetails = await Category.findOne({ name: new RegExp(`^${categoryName}$`, 'i') });
         if (!categoryDetails) {
             return res.status(400).json({
                 success: false,
@@ -83,8 +83,8 @@ exports.getAllProducts = async (req, res) => {
                 image: true,
                 stock: true,
                 category: true,
-                tags:true,
-                images:true,
+                tags: true,
+                images: true,
             }).populate("category").exec();
         return res.status(200).json({
             success: true,
@@ -100,48 +100,106 @@ exports.getAllProducts = async (req, res) => {
     }
 };
 
-// had to handel images means update and remove the previous ones
+
 exports.updateProduct = async (req, res) => {
-    try {
-        const { productId, name, price, description, stock, category, tag } = req.body;
-        const product = await Product.findById(productId);
-       console.log(1)
-        if (!product) {
-            return res.status(400).json(
-                {
-                    success: false,
-                    message: "Could not find the product from the product id"
-                }
-            );
-        }
-        console.log(2)
-        const updatedProduct = await Product.findByIdAndUpdate(productId, {
-            name,
-            price,
-            description,
-            stock,
-            category,
-            ...(tag ? { $push: { tag: tag } } : {})
-        }, { new: true, runValidators: true }
-        );
-        if (!updatedProduct) {
-            return res.status(404).json({
-                success: false,
-                message: "Product not found"
-            });
-        }
+  try {
+    const { productId, name, price, description, stock, category, tags, existingImages } = req.body;
+    const files = req.files?.image;
 
-        res.status(200).json({
-            success: true,
-            message: "Product updated successfully",
-            product: updatedProduct
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
     }
+    console.log(files)
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (price) updateFields.price = price;
+    if (description) updateFields.description = description;
+    if (stock) updateFields.stock = stock;
+    if (category) {
+      const catDoc = await Category.findOne({ name: category });
+      if (catDoc) updateFields.category = catDoc._id;
+    }
+    if (tags) {
+      updateFields.tags = Array.isArray(tags)
+        ? tags
+        : tags.split(",").map((tag) => tag.trim());
+    }
+
+    let finalImages = [];
+
+    const existing = existingImages ? JSON.parse(existingImages) : [];
+
+    // Delete removed images from Cloudinary
+    const removed = product.images.filter((url) => !existing.includes(url));
+    await Promise.all(removed.map((url) => deleteImage(url)));
+    let newUrls = [];
+    if (files) {
+      const upload = await uploadImage(files, "products");
+      if (upload.success) {
+        newUrls = upload.urls;
+      }
+    }
+    finalImages = [...existing, ...newUrls];
+    updateFields.images = finalImages;
+    const updatedProduct = await Product.findByIdAndUpdate(productId, updateFields, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+
+  } catch (err) {
+    console.error("Update Product Error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
 };
+
+// // had to handel images means update and remove the previous ones
+// exports.updateProduct = async (req, res) => {
+//     try {
+//         const { productId, name, price, description, stock, category, tags } = req.body;
+//         const product = await Product.findById(productId);
+//         if (!product) {
+//             return res.status(404).json({ success: false, message: "Product not found" });
+//         }
+
+//         // Build update object only with provided fields
+//         const updateFields = {};
+//         if (name) updateFields.name = name;
+//         if (price) updateFields.price = price;
+//         if (description) updateFields.description = description;
+//         if (stock) updateFields.stock = stock;
+//         if (category) {
+//             const catDoc = await Category.findOne({ name: category });
+//             if (catDoc) updateFields.category = catDoc._id;
+//         }
+//         if (tags) {
+//             updateFields.tags = Array.isArray(tags) ? tags : tags.split(",").map((tag) => tag.trim());
+//         }
+
+//         const updatedProduct = await Product.findByIdAndUpdate(
+//             productId,
+//             updateFields,
+//             { new: true, runValidators: true }
+//         );
+
+//         res.status(200).json({
+//             success: true,
+//             message: "Product updated successfully",
+//             product: updatedProduct,
+//         });
+
+//     } catch (err) {
+//         console.error("Update Product Error:", err);
+//         res.status(500).json({ success: false, message: "Internal server error" });
+//     }
+// };
+
 // working
 exports.deleteProduct = async (req, res) => {
     try {
@@ -153,8 +211,13 @@ exports.deleteProduct = async (req, res) => {
                 message: "please provide the id for deleting the product"
             })
         }
-
         const deletedProduct = await Product.findByIdAndDelete(productId);
+        if (deletedProduct?.images?.length) {
+            await Promise.all(
+                deletedProduct.images.map((imageUrl) => deleteImage(imageUrl))
+            );
+        }
+    
         if (!deletedProduct) {
             return res.status(404).json({ // Use 404 if product not found
                 success: false,

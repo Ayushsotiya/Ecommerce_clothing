@@ -19,7 +19,7 @@ const NavBar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await showAllCategory();
+        const response = await showAllCategory(dispatch);
         setCategories(response.data.data);
       } catch (error) {
         console.error("Error fetching categories:", error);

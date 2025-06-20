@@ -27,7 +27,7 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await showAllCategory(); // Adjust the API endpoint as needed
+        const response = await showAllCategory(dispatch); // Adjust the API endpoint as needed
         setCategory(response.data.data);
       } catch (error) {
         console.error("Error fetching categories:", error);

@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
 const Card = ({ title, subHeading, image }) => {
+  const navigate = useNavigate();
     return (
       <div
         className="bg-cover bg-center  shadow-lg p-6 flex flex-col justify-end"
@@ -8,7 +10,7 @@ const Card = ({ title, subHeading, image }) => {
         <div className="bg-black bg-opacity-10 text-white items-center p-2 rounded-lg flex flex-col gap-2">
           <h3 className="text-xl font-semibold">{title}</h3>
           <p className="text-sm mb-5">{subHeading}</p>
-          <Button className="w-24">Discover</Button>
+          <Button className="w-24" onClick={() => navigate('/shop')}>Discover</Button>
         </div>
       </div>
     );

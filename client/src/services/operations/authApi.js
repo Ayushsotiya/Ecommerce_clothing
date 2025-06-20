@@ -1,7 +1,7 @@
 
 import { apiConnector } from "../apiConnector";
 import { auth } from "../api";
-import { toast } from "sonner"
+import { toast } from "react-hot-toast"
 import { setLoading, setToken, setSignUpData } from "../../slice/authSlice";
 import { setUser } from "../../slice/profileSlice";
 
@@ -26,17 +26,19 @@ export function signup(phoneNo, Name, email, password, confirmPassword, otp, nav
             if (!response.data.success) {
                 throw new Error(response.data.message);
             }
-            toast("Signup Successfully");
+            toast.success("Signup Successfully");
             navigate("/login");
         } catch (error) {
             console.log("SIGNUP API ERROR...", error);
             toast("Could Not Sign Up");
+            toast.error("signup failed")
         }
         dispatch(setLoading(false));
     }
 }
 
 export function sendOtp(email, navigate) {
+    
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
@@ -48,19 +50,21 @@ export function sendOtp(email, navigate) {
                 navigate("/signup");
                 throw new Error(response.data.message);
             }
-            toast("OTP Sent Successfully check your email");
+            toast.success("OTP Sent Successfully check your email");
             navigate("/verify-email");
 
         } catch (error) {
             console.log("SENDOTP API ERROR...", error);
-            toast("Could Not Send OTP");
+            toast.error("Could Not Send OTP");
         }
         dispatch(setLoading(false));
+
     }
 }
 
 export function login(email, password, navigate) {
     return async (dispatch) => {
+        dispatch(setLoading(true))
         try {
             const response = await apiConnector("POST", LOGIN_API, { email, password });
             if (!response.data.success) {
@@ -68,13 +72,15 @@ export function login(email, password, navigate) {
             }
             dispatch(setToken(response.data.token));
             dispatch(setUser(response.data.response));
-            toast("Login Successfully")
+            toast.success("Login Successfully")
             response.data.response.type === "Admin" ? (navigate("/dashboard/admin/profile")) : (navigate("/dashboard/profile"));
         }
         catch (error) {
             console.log("LOGIN API ERROR...", error);
-            toast("Could Not Login");
+            toast.error("Could Not Login");
         }
+        dispatch(setLoading(false))
+        
     }
 }
 

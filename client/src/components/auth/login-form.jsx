@@ -16,7 +16,7 @@ import { useDispatch } from "react-redux"
 import { sendOtp, login } from "@/services/operations/authApi"
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from "react-redux"
-
+import { SyncLoader } from "react-spinners";
 export function LoginForm({ className, ...props }) {
   const {
     register,
@@ -28,7 +28,7 @@ export function LoginForm({ className, ...props }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const password = watch("password")
-  const { Loading } = useSelector((state) => state.auth)
+  const { loading } = useSelector((state) => state.auth)
 
   const onSubmit = async (data) => {
     if (props.heading === "Login") {
@@ -51,6 +51,13 @@ export function LoginForm({ className, ...props }) {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center mx-auto text-white">
+        <SyncLoader color="#FFFFFF" />
+      </div>
+    )
+  }
   return (
     <div className={cn("w-full max-w-md mx-auto", className)} {...props}>
       <Card className="text-white border-[#797878]">
@@ -165,7 +172,7 @@ export function LoginForm({ className, ...props }) {
               </div>
             )}
 
-            <Button type="submit" className="w-full bg-white text-black hover:bg-gray-200" disabled={Loading}>
+            <Button type="submit" className="w-full bg-white text-black hover:bg-gray-200" disabled={loading}>
               {props.heading}
             </Button>
           </form>

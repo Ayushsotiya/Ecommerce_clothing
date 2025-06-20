@@ -75,7 +75,7 @@ const userItems = {
       icon: User,
     },
     {
-      title: "Orders",
+      title: "Orders History",
       url: "/dashboard/orders",
       icon: Package,
     },

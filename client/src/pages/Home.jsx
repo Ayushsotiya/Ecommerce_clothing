@@ -73,7 +73,7 @@ const Home = () => {
               <p className="text-gray-600 mb-8 text-lg leading-relaxed">
                 Discover our curated collection of timeless pieces designed for the modern individual. Each garment is carefully crafted to embody both elegance and comfort.
               </p>
-              <Link to="/products">
+              <Link to="/shop">
                 <Button variant="outline" size="lg" className="bg-primary text-black">
                   Explore Collection
                 </Button>

@@ -10,12 +10,14 @@ import { Toaster } from "react-hot-toast"
 import authSlice from "@/slice/authSlice"
 import profileSlice from "@/slice/profileSlice"
 import productSlice from "@/slice/productSlice"
+import categorySlice from "@/slice/categorySlice"
 
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     profile: profileSlice,
     product: productSlice,
+    category:categorySlice,
   }
 })
 

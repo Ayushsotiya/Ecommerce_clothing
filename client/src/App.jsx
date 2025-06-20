@@ -1,4 +1,4 @@
-import { React } from 'react';
+
 import { Routes, Route } from "react-router";
 import { useEffect } from 'react';
 import Home from './pages/Home'
@@ -26,11 +26,16 @@ import { useSelector } from 'react-redux';
 import ResetPassword from "./pages/ResetPasssword"
 import AddProduct from "./components/dashboard/admin/createProduct"
 import { useLocation } from "react-router-dom";
-
+import { fetchAllProducts } from "./services/operations/productApi";
+import { useDispatch } from "react-redux";
 function App() {
   const { user } = useSelector((state) => state.profile)
+  const dispatch = useDispatch();
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
+    useEffect(() => {
+      dispatch(fetchAllProducts())
+    }, [dispatch])
   return (
     <>
       {!isDashboardRoute && <NavBar className="fixed" />}

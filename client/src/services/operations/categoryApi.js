@@ -1,6 +1,7 @@
 import { category } from "../api"
 import { apiConnector } from "../apiConnector";
 import { ToastContainer, toast } from 'react-toastify';
+import {setCategory} from "../../slice/categorySlice";
 
 const {
     CREATECATEGORY_API,
@@ -25,12 +26,14 @@ export async function createCategory(name,token){
         }
 
 }
-export async function showAllCategory(){
+export async function showAllCategory(dispatch){
+  
     try{
         const response = await apiConnector("GET",SHOWALLCATEGORY_API);
         if(!response.data.success){
            throw new Error("cant fetch the categoty");
         }
+           dispatch(setCategory(response.data.data));
          toast("Category fetched",{theme:"dark",autoClose:1000});
         return response;
     }catch(error){

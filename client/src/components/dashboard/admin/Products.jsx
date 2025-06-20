@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { SyncLoader } from "react-spinners"
 import { showAllCategory } from "../../../services/operations/categoryApi"
-
+import { Trash2 ,Pencil,Pickaxe} from 'lucide-react';
 const Product = () => {
   const dispatch = useDispatch()
   const { products, loading } = useSelector((state) => state.product)
@@ -38,7 +38,7 @@ const Product = () => {
 
   useEffect(() => {
     const loadCategories = async () => {
-      const res = await showAllCategory()
+      const res = await showAllCategory(dispatch)
       setCategory(res.data.data)
     }
     loadCategories()
@@ -102,10 +102,10 @@ const Product = () => {
       <div className="flex items-center justify-between w-full max-w-7xl my-4">
         <div>Welcome back!</div>
         <button
-          className="bg-primary rounded-md text-black p-2 text-sm font-bold"
+          className="bg-primary rounded-md flex gap-x-2 justify-center items-center text-black p-2 text-sm font-bold"
           onClick={() => navigate("/dashboard/admin/add-product")}
-        >
-          Create Product
+        > 
+          < Pickaxe/>Create Product
         </button>
       </div>
 
@@ -157,17 +157,20 @@ const Product = () => {
                       openModal(product._id)
                     }}
                   >
-                    Edit
+                    <Pencil size={18}/> Edit
                   </button>
                   <button
-                    className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-1.5 rounded-xl transition-all"
+                    className="bg-red-500 hover:bg-red-600 text-white font-medium px-3 rounded-xl transition-all"
                     onClick={(e) => {
                       e.stopPropagation()
                       setDeleteId(product._id)
                       setDeleteModalOpen(true)
                     }}
                   >
-                    Delete
+                    <div className="flex justify-center items-center gap-x-2">
+                      <Trash2 size={18}/> Delete
+                    </div>
+                   
                   </button>
                 </td>
               </tr>

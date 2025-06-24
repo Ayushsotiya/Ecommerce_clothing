@@ -1,26 +1,29 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
+import {createOrder} from "../services/operations/paymentApi"
 const PRODUCTS_PER_PAGE = 6;
 
-const purchase = () => console.log("purchase");
-const addToCart = () => console.log("add to cart");
 
+const addToCart = () => console.log("add to cart");
 const Shop = () => {
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
   const { products } = useSelector((state) => state.product);
-  const { categories } = useSelector((state) => state.category); 
+  const { token } = useSelector((state) => state.auth);
+  const {user} = useSelector((state) => state.profile);
+  const { categories } = useSelector((state) => state.category);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [imageIndexes, setImageIndexes] = useState({});
 
- const filteredByCategory = selectedCategory === "All"
-  ? products
-  : products.filter((p) => p.category?.name === selectedCategory);
+  const filteredByCategory = selectedCategory === "All"
+    ? products
+    : products.filter((p) => p.category?.name === selectedCategory);
 
 
   const filteredProducts = filteredByCategory.filter((product) =>
@@ -43,6 +46,17 @@ const Shop = () => {
     });
   };
 
+
+  const purchase = async (product,) => {
+    try {
+      const productIds = Array.isArray(product) 
+        ? product.map(p => p._id)
+        : [product._id];
+      await createOrder( productIds , token, navigate, user,dispatch);
+    } catch (error) {
+      console.error("Purchase failed:", error);
+    }
+  }
   return (
     <div className="min-h-screen bg-[#131314]">
       <div className="text-white py-20 text-center">
@@ -137,7 +151,7 @@ const Shop = () => {
                   className="w-full"
                   onClick={(e) => {
                     e.stopPropagation();
-                    purchase();
+                    purchase(product);
                   }}
                 >
                   Buy Now

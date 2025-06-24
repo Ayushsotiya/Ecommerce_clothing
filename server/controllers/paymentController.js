@@ -1,5 +1,5 @@
 const { Cursor } = require("mongoose");
-const { instance } = require("../Config/razorpay");
+const {instance} = require("../Config/razorpay");
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Order = require('../models/Order');
@@ -8,12 +8,16 @@ require("dotenv").config();
 
 exports.createPayment = async (req, res) => {
     try {
-        const { products } = req.body;
-        if (!Array.isArray(products) || products.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "No products provided",
-            });
+        let { products } = req.body;
+        if (!Array.isArray(products)) {
+            if (typeof products === "object") {
+                products = [products];
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid products format",
+                });
+            }
         }
         let total_amount = 0;
         for (const product_id of products) {
@@ -36,6 +40,7 @@ exports.createPayment = async (req, res) => {
                 receipt: Date.now().toString(),
             };
             const paymentResponse = await instance.orders.create(option);
+            console.log("created");
             return res.json({
                 success: true,
                 data: paymentResponse,
@@ -56,6 +61,7 @@ exports.createPayment = async (req, res) => {
 };
 
 exports.verifyPayment = async (req, res) => {
+    console.log("verification started in the backend");
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, products } = req.body;
     const userId = req.user.id;
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !products || !userId) {
@@ -74,7 +80,7 @@ exports.verifyPayment = async (req, res) => {
     }
 };
 
-exports.addProductToCustomer = async (products, userId, res) => {
+const addProductToCustomer = async (products, userId, res) => {
     if (!products || !userId) {
         return res.status(400).json({ success: false, message: "Please provide products and User ID" });
     }

@@ -11,13 +11,14 @@ import authSlice from "@/slice/authSlice"
 import profileSlice from "@/slice/profileSlice"
 import productSlice from "@/slice/productSlice"
 import categorySlice from "@/slice/categorySlice"
-
+import cartSlice from "@/slice/cartSlice";
 export const store = configureStore({
   reducer: {
     auth: authSlice,
     profile: profileSlice,
     product: productSlice,
     category:categorySlice,
+    cart:cartSlice 
   }
 })
 

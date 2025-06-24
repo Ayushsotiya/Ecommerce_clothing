@@ -24,3 +24,9 @@ export const product = {
     UPDATEPRODUCT_API: BASE_URL + 'product/updateproduct',
     DELETEPROUDCT_API: BASE_URL + 'product/deleteproduct',
 }
+
+export const payment = {
+    CREATEORDER_API: BASE_URL + 'payment/createorder',
+    VERIFYPAYMENT_API: BASE_URL + 'payment/verifypayment',
+    ADDPRODUCTTOCUSTOMER_API: BASE_URL + 'payment/addproducttocustomer',
+}

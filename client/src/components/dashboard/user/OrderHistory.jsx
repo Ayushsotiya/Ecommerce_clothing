@@ -1,45 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect,useState } from 'react'
 import Order from "../orderComponent";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { apiConnector } from "../../../services/apiConnector";
 
-const Orders = () => {
+const OrderHistory = () => {
+  const [orderData, setOrderData] = useState([]);
+  const {user} = useSelector((state)=>state.profile);
   const { token } = useSelector((state) => state.auth);
-  const [orderData, setOrderData] = useState([]); 
-
+  const userId = user._id;
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    const fetchUserOrder = async () => {
       try {
         const res = await apiConnector(
           "POST",
-          "http://localhost:4000/api/v1/order/order-info",
+          "http://localhost:4000/api/v1/order/order-userInfo",
           {},
           {
             Authorization: `Bearer ${token}`,
           }
         );
-
         if (!res.data.success) {
           throw new Error("Can't fetch orders");
         }
-
         toast.success("Orders fetched successfully");
-        setOrderData(res.data.orders); 
+        setOrderData(res.data.orders);
       } catch (error) {
         console.log(error);
         toast.error("Order could not be fetched");
       }
-    };
-
-    fetchOrderDetails();
-  }, [token]);
-
+      toast.dismiss();
+    }
+    const res = fetchUserOrder();
+    setOrderData(res.data);
+  } ,[])
   return (
-    <div className="min-h-screen bg-black p-6 flex justify-center items-center mx-auto">
-      <Order orders={orderData} /> 
+    <div className='flex flex-col gap-y-10 text-white'>
+      <Order name={orderData} />
     </div>
-  );
-};
 
-export default Orders;
+  )
+}
+
+export default OrderHistory

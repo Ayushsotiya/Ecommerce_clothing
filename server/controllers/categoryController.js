@@ -41,7 +41,6 @@ exports.createCategory = async (req, res) => {
     }
 };
 // working
-
 exports.findCategory = async (req, res) => {
     try {
         const { name } = req.body;
@@ -71,6 +70,7 @@ exports.findCategory = async (req, res) => {
         })
     }
 }
+// working
 exports.deleteCategory = async (req, res) => {
     try {
         const { name} = req.body;

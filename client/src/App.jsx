@@ -18,10 +18,10 @@ import Footer from "@/components/common/Footer"
 import Analysis from './components/dashboard/admin/Analysis';
 import Customer from "./components/dashboard/admin/Customer"
 import Orders from "./components/dashboard/admin/Orders"
+import OrderHistory from "./components/dashboard/user/OrderHistory"
 import Products from "./components/dashboard/admin/Products"
 import Category from "./components/dashboard/admin/Category"
 import Address from './components/dashboard/user/Address';
-import Order from './components/dashboard/user/Order';
 import { useSelector } from 'react-redux';
 import ResetPassword from "./pages/ResetPasssword"
 import AddProduct from "./components/dashboard/admin/createProduct"
@@ -64,7 +64,7 @@ function App() {
             (<>
               <Route path="profile" element={<Profile />}></Route>
               <Route path="address" element={<Address />}></Route>
-              <Route path="orders" element={<Order />}></Route>
+              <Route path="orders-history" element={<OrderHistory />}></Route>
             </>
             )
           }

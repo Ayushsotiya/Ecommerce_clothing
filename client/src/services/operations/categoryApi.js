@@ -12,17 +12,17 @@ const {
 
 export async function createCategory(name,token){
         try{
-           const response = await apiConnector("POST",CREATECATEGORY_API,{name,token},{Authorization:`Bearer${token}`})
+           const response = await apiConnector("POST",CREATECATEGORY_API,{name,token},{Authorization:`Bearer ${token}`})
            console.log("CreateCategory API RESPONSE...........", response)
            if(!response.data.success){
               throw new Error("cant create the categoty");
            }
-           toast("Category created",{theme:"dark",autoClose:1000});
+           toast.success("Category created");
         
            return response;
         }catch(error){
             console.log(error.message);
-            toast("cant create the categoty",{theme:"dark",autoClose:1000});
+            toast.dismiss("couldddd not Category created");
         }
 
 }

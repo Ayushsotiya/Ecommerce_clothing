@@ -10,6 +10,8 @@ const productRoute = require("./routes/productRoutes")
 const categoryRoute = require("./routes/categoryRoutes")
 const ratingAndReviewRoute = require("./routes/ratingAndReviewRoute");
 const fileUpload = require("express-fileupload");
+const paymentRoute = require("./routes/paymentRoutes");
+const orderRoute = require('./routes/OrderRoutes');
 const PORT = process.env.PORT;
 
 
@@ -24,11 +26,11 @@ app.use(cors());
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/product', productRoute);
 app.use('/api/v1/category',categoryRoute);
-app.use('api/v1/ratingandreview',ratingAndReviewRoute);
-
+app.use('/api/v1/ratingandreview',ratingAndReviewRoute);
+app.use('/api/v1/payment',paymentRoute);
+app.use('/api/v1/order',orderRoute);
 connectDB();
 cloudinaryConnect();
-
 
 
 app.get('/', (req, res) => {

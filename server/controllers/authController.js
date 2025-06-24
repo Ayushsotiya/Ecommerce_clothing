@@ -114,7 +114,7 @@ exports.login = async (req, res) => {
                 id: response._id,
                 type: response.type
             }
-            const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '3d' })
+            const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' })
             response.token = token;
             response.password = null;
             const option = {

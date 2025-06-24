@@ -5,13 +5,16 @@ import { useSelector } from "react-redux";
 import { apiConnector } from "../../../services/apiConnector";
 
 const OrderHistory = () => {
+
+
   const [orderData, setOrderData] = useState([]);
-  const {user} = useSelector((state)=>state.profile);
   const { token } = useSelector((state) => state.auth);
-  const userId = user._id;
+  
+
   useEffect(() => {
     const fetchUserOrder = async () => {
       try {
+        console.log("fetching details");
         const res = await apiConnector(
           "POST",
           "http://localhost:4000/api/v1/order/order-userInfo",
@@ -23,6 +26,7 @@ const OrderHistory = () => {
         if (!res.data.success) {
           throw new Error("Can't fetch orders");
         }
+        console.log("GET_ORDER_DETAILS_OF_USER",res);
         toast.success("Orders fetched successfully");
         setOrderData(res.data.orders);
       } catch (error) {
@@ -34,9 +38,13 @@ const OrderHistory = () => {
     const res = fetchUserOrder();
     setOrderData(res.data);
   } ,[])
+
+
+
+
   return (
     <div className='flex flex-col gap-y-10 text-white'>
-      <Order name={orderData} />
+      <Order orders={orderData} />
     </div>
 
   )

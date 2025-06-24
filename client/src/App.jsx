@@ -35,7 +35,7 @@ function App() {
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
     useEffect(() => {
       dispatch(fetchAllProducts())
-    }, [dispatch])
+    }, [])
   return (
     <>
       {!isDashboardRoute && <NavBar className="fixed" />}

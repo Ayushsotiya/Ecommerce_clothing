@@ -31,11 +31,13 @@ exports.fetchOrders = async(req,res)=>{
 
 exports.userSpecificOrder = async(req,res)=>{
      try{
-        const userId = req.user._id;
+        const userId = req.user.id;
+        console.log(userId);
         const response = await Order.find({user:userId})
             .populate('items.product')
             .populate('user')
             .exec();
+        console.log(response);
         if(!response ){
             console.log("there is no Orders");
             return res.status(402).json({
@@ -43,6 +45,7 @@ exports.userSpecificOrder = async(req,res)=>{
                 message:"Could not found the order",
             })
         }
+
         return res.status(200).json({
             success:true,
             message:"Orders are fetched",

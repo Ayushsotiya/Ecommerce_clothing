@@ -30,3 +30,9 @@ export const payment = {
     VERIFYPAYMENT_API: BASE_URL + 'payment/verifypayment',
     ADDPRODUCTTOCUSTOMER_API: BASE_URL + 'payment/addproducttocustomer',
 }
+
+export const cart = {
+    FETCHCART_API:BASE_URL + 'cart/fetch-cart',
+    DELETECART_API:BASE_URL+'cart/delete',
+    ADDCART_API:BASE_URL+"car/add-product",
+}

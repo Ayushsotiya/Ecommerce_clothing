@@ -28,6 +28,7 @@ import AddProduct from "./components/dashboard/admin/createProduct"
 import { useLocation } from "react-router-dom";
 import { fetchAllProducts } from "./services/operations/productApi";
 import { useDispatch } from "react-redux";
+import ProductDetails from "./pages/Product";
 function App() {
   const { user } = useSelector((state) => state.profile)
   const dispatch = useDispatch();
@@ -48,7 +49,7 @@ function App() {
         <Route path="/signup" element={<OpenRoute><Signup /></OpenRoute>}></Route>
         <Route path="/verify-email" element={< OpenRoute> <Otp /></OpenRoute>}></Route>
         <Route path="/reset-password" element={<OpenRoute><ResetPassword /></OpenRoute>}></Route>
-        
+        <Route path= '/product/:id' element = {<ProductDetails/>}></Route>
         <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>}>
           {user?.type === 'Admin' ? (
             <>

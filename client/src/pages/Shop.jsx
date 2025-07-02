@@ -4,10 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {createOrder} from "../services/operations/paymentApi"
+
 const PRODUCTS_PER_PAGE = 6;
 
 
-const addToCart = () => console.log("add to cart");
+
 const Shop = () => {
   const dispatch = useDispatch();
 
@@ -46,7 +47,7 @@ const Shop = () => {
     });
   };
 
-
+ 
   const purchase = async (product,) => {
     try {
       const productIds = Array.isArray(product) 
@@ -57,6 +58,17 @@ const Shop = () => {
       console.error("Purchase failed:", error);
     }
   }
+
+  //  const addToCart = (product) =>{
+  //       try{
+  //           dispatch(setLoading(true));
+  //           dispatch(setCart(product));
+  //       }catch(error){
+  //          console.log(error);
+  //       }
+  //  }
+
+
   return (
     <div className="min-h-screen bg-[#131314]">
       <div className="text-white py-20 text-center">
@@ -160,7 +172,7 @@ const Shop = () => {
                   className="w-full bg-white items-center flex text-black hover:bg-gray-100"
                   onClick={(e) => {
                     e.stopPropagation();
-                    addToCart();
+                    addToCart(product);
                   }}
                 >
                   Add to Cart

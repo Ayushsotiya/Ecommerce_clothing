@@ -36,15 +36,14 @@ const OrderHistory = () => {
       toast.dismiss();
     }
     const res = fetchUserOrder();
-    setOrderData(res.data);
   } ,[])
 
 
 
-
+console.log("orderData->>",orderData)
   return (
     <div className='flex flex-col gap-y-10 text-white'>
-      <Order orders={orderData} />
+      <Order orders={orderData} userType={"User"}/>
     </div>
 
   )

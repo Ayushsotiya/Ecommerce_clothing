@@ -1,0 +1,3 @@
+1->> have to check the contact-us from 
+2->> have to add buy button in the detailed product page
+3->> have to make the add to cart feature

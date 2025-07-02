@@ -23,9 +23,9 @@ const Orders = () => {
         if (!res.data.success) {
           throw new Error("Can't fetch orders");
         }
-
+        console.log(res);
         toast.success("Orders fetched successfully");
-        setOrderData(res.data.orders); 
+        setOrderData(res.data.response); 
       } catch (error) {
         console.log(error);
         toast.error("Order could not be fetched");
@@ -33,11 +33,11 @@ const Orders = () => {
     };
 
     fetchOrderDetails();
-  }, [token]);
-
+  }, []);
+   console.log("11->>>>",orderData)
   return (
-    <div className="min-h-screen bg-black p-6 flex justify-center items-center mx-auto">
-      <Order orders={orderData} /> 
+    <div className="min-h-screen bg-black p-6 flex justify-center  mx-auto">
+      <Order orders={orderData} userType={"Admin"} /> 
     </div>
   );
 };

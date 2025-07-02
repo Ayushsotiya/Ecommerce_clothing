@@ -36,3 +36,6 @@ server/build/
 # === COVERAGE & TEST OUTPUT ===
 coverage/
 *.lcov
+
+
+.txt

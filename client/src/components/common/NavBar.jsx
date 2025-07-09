@@ -10,7 +10,7 @@ const NavBar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.profile);
-
+  const { totalItems } = useSelector((state) => state.cart);
   const handleLogout = () => {
     dispatch(logout(navigate));
   };
@@ -69,7 +69,7 @@ const NavBar = () => {
           <li>
             <Link to="/about" className='text-sm font-medium hover:text-white/80 transition-colors'>About</Link>
           </li>
-          
+
           <li>
             <Link to="/contact" className='text-sm font-medium hover:text-white/80 transition-colors'>Contact</Link>
           </li>
@@ -80,7 +80,12 @@ const NavBar = () => {
       <div className='flex items-center gap-4'>
         {user ? (
           <>
-            <Link to="/cart" className="p-2 hover:bg-white/10 rounded-full transition-colors">
+            <Link to="/cart" className="p-2 hover:bg-white/10 rounded-full transition-colors relative">
+              {totalItems > 0 && (
+                <div className="absolute -top-1 -right-1 flex items-center justify-center bg-primary text-white text-[10px] font-bold w-4 h-4 rounded-full">
+                  {totalItems}
+                </div>
+              )}
               <ShoppingCart size={18} />
             </Link>
 

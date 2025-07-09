@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import {createOrder} from "../services/operations/paymentApi"
-
+import { createOrder } from "../services/operations/paymentApi"
+import { setLoading, addToCart } from '../slice/cartSlice';
 const PRODUCTS_PER_PAGE = 6;
 
 
@@ -15,7 +15,7 @@ const Shop = () => {
   const navigate = useNavigate();
   const { products } = useSelector((state) => state.product);
   const { token } = useSelector((state) => state.auth);
-  const {user} = useSelector((state) => state.profile);
+  const { user } = useSelector((state) => state.profile);
   const { categories } = useSelector((state) => state.category);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -47,26 +47,27 @@ const Shop = () => {
     });
   };
 
- 
+
   const purchase = async (product,) => {
     try {
-      const productIds = Array.isArray(product) 
+      const productIds = Array.isArray(product)
         ? product.map(p => p._id)
         : [product._id];
-      await createOrder( productIds , token, navigate, user,dispatch);
+      await createOrder(productIds, token, navigate, user, dispatch);
     } catch (error) {
       console.error("Purchase failed:", error);
     }
   }
 
-  //  const addToCart = (product) =>{
-  //       try{
-  //           dispatch(setLoading(true));
-  //           dispatch(setCart(product));
-  //       }catch(error){
-  //          console.log(error);
-  //       }
-  //  }
+  const addToCartHandler = (product) => {
+    try {
+      dispatch(setLoading(true));
+      dispatch(addToCart(product));
+    } catch (error) {
+      console.log(error);
+    }
+    dispatch(setLoading(false));
+  }
 
 
   return (
@@ -172,7 +173,7 @@ const Shop = () => {
                   className="w-full bg-white items-center flex text-black hover:bg-gray-100"
                   onClick={(e) => {
                     e.stopPropagation();
-                    addToCart(product);
+                    addToCartHandler(product);
                   }}
                 >
                   Add to Cart

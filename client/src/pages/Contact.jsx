@@ -6,25 +6,24 @@ import contactus from "../../src/assets/contactus.jpg"
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const Contact = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit,reset } = useForm();
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await apiConnector('POST', `${BASE_URL}/contact`, data);
-
+      const response = await apiConnector('POST', `http://localhost:4000/api/v1/contact/contact-us`, data);
       if (!response.data.success) {
         toast.error(response.data.message);
-      } else {
-        toast.success('Message sent successfully!');
       }
-    } catch (err) {
+      console.log("MESSAGE_IS_SENT")
+    } catch (error) {
       toast.error('Something went wrong!');
     }
+    reset()
     setLoading(false);
   };
-
+  
   return (
     <div className="min-h-screen w-full bg-[black] flex items-center justify-center px-4">
       <div className="w-full max-w-6xl bg-white shadow-md rounded-2xl p-8 grid md:grid-cols-2 gap-10">
@@ -72,6 +71,14 @@ const Contact = () => {
               />
             </div>
 
+            <div className='flex flex-col'>
+              <label htmlFor='title' className='text-sm text-[#797878]  mb-1'>Title</label>
+              <input type='text' id='title' placeholder='Enter the title' {...register('title')}
+                className="border border-[#dcdcdc] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FEB714]"
+                required>
+              </input>
+            </div>
+
             <div className="flex flex-col">
               <label htmlFor="message" className="text-sm text-[#797878] mb-1">
                 Message
@@ -88,9 +95,8 @@ const Contact = () => {
 
             <button
               type="submit"
-              className={`bg-[#FEB714] text-[#131314] font-semibold py-2 rounded-lg hover:bg-[#e4a915] transition-all ${
-                loading && 'opacity-60 cursor-not-allowed'
-              }`}
+              className={`bg-[#FEB714] text-[#131314] font-semibold py-2 rounded-lg hover:bg-[#e4a915] transition-all ${loading && 'opacity-60 cursor-not-allowed'
+                }`}
               disabled={loading}
             >
               {loading ? 'Sending...' : 'Send Message'}

@@ -12,6 +12,7 @@ const ratingAndReviewRoute = require("./routes/ratingAndReviewRoute");
 const fileUpload = require("express-fileupload");
 const paymentRoute = require("./routes/paymentRoutes");
 const orderRoute = require('./routes/OrderRoutes');
+const contactRoute =require('./routes/contactRoute');
 const PORT = process.env.PORT;
 
 
@@ -29,6 +30,7 @@ app.use('/api/v1/category',categoryRoute);
 app.use('/api/v1/ratingandreview',ratingAndReviewRoute);
 app.use('/api/v1/payment',paymentRoute);
 app.use('/api/v1/order',orderRoute);
+app.use('/api/v1/contact',contactRoute);
 connectDB();
 cloudinaryConnect();
 

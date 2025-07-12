@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { createOrder } from '../services/operations/paymentApi';
-
+import { setLoading, addToCart } from '../slice/cartSlice';
 import { useNavigate } from 'react-router-dom';
 
 export default function ProductDetails() {
@@ -22,7 +22,16 @@ export default function ProductDetails() {
     }
   }
 
-
+   const addToCartHandler = () => {
+      try {
+        dispatch(setLoading(true));
+        dispatch(addToCart(product));
+      } catch (error) {
+        console.log(error);
+      }
+      dispatch(setLoading(false));
+    }
+  
 
   if (!product) {
     return (
@@ -88,6 +97,7 @@ export default function ProductDetails() {
             <button
               className="px-6 py-2 rounded-xl transition-all"
               style={{ backgroundColor: '#131314', color: '#FAF9F6' }}
+              onClick={()=>addToCartHandler()}
             >
               Add to Cart
             </button>

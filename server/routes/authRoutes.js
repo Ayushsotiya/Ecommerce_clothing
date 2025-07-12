@@ -13,7 +13,7 @@ router.post("/sendotp",otp)
 router.post('/changepassword', auth, changePassword);
 router.post('/resetpasswordtoken', resetPasswordToken);
 router.post('/resetpassword', resetPassword);
-router.post('/addaddress', auth,isUser,addOrUpdateAddress);
+router.post('/addaddress', auth,addOrUpdateAddress);
 router.post('/getaddress',auth,isUser, getAddress);
 router.post('/updateProfile',auth, updateProfile);
 module.exports = router;

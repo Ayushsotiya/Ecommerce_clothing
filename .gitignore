@@ -38,4 +38,4 @@ coverage/
 *.lcov
 
 
-.txt
+*.txt

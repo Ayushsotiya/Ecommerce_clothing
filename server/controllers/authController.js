@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const Address = require("../models/Address");
 const Otp = require("../models/Otp");
-const Address = require('../models/Address');
 const jwt = require('jsonwebtoken');
 const otpGenerator = require('otp-generator');
 const { sendMail } = require("../utils/mailsend");
@@ -95,7 +95,7 @@ exports.login = async (req, res) => {
                 message: "please provide all the field",
             })
         }
-        const response = await User.findOne({ email });
+        const response = await User.findOne({ email }).populate('address').exec();
         if (!response) {
             return res.status(400).json({
                 success: false,
@@ -261,14 +261,14 @@ exports.resetPassword = async (req, res) => {
 exports.changePassword = async (req, res) => {
     try {
         const userDetails = await User.findById(req.user.id);
-        const { oldPassword, newPassword} = req.body;
-        if (!oldPassword || !newPassword ||!userDetails) {
+        const { currentPassword, newPassword} = req.body;
+        if (!currentPassword || !newPassword ||!userDetails) {
             return res.status(400).json({
                 success: false,
                 message: "please provide all the details"
             })  
         }
-        const isMatch = await bcrypt.compare(oldPassword, userDetails.password);
+        const isMatch = await bcrypt.compare(currentPassword, userDetails.password);
         if (!isMatch) {
             return res.status(400).json({
                 success: false,
@@ -277,6 +277,7 @@ exports.changePassword = async (req, res) => {
         }
         const hashPass = await bcrypt.hash(newPassword, 10);
         const updateduser = await User.findByIdAndUpdate( req.user.id, { password: hashPass }, { new: true });
+        console.log("password changed")
         return res.json({
             success: true,
             message: "Password changed successfully"
@@ -291,33 +292,32 @@ exports.changePassword = async (req, res) => {
 
 exports.addOrUpdateAddress= async (req, res) => {
     try {
-        const { houseNo, streetAndAddress, city, state, postalCode, country } = req.body;
-        console.log("the id of the user ",req.user.id);
+        console.log("1111")
+        const { houseNo, street,address, city, state, postalCode, country } = req.body;
         const userId = req.user.id; 
         let user = await User.findById(userId);
-        if (!user ||!houseNo || !streetAndAddress || !city || !state || !postalCode || !country) {
+        if (!user ||!houseNo || !street||!address || !city || !state || !postalCode || !country) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all address fields."
             });
-        }
-
-
-        let address = await Address.findOne({ user: userId });
-        if (address) {
-            // Update existing address
-            address.houseNo = houseNo;
-            address.streetAndAddress = streetAndAddress;
-            address.city = city;
-            address.state = state;
-            address.postalCode = postalCode;
-            address.country = country;
-            await address.save();
+        }   
+        let responseAddress =  await Address.findOne({ user: userId });
+        console.log(responseAddress)
+        if (responseAddress) {
+            responseAddress.houseNo = houseNo;
+            responseAddress.street = street;
+            responseAddress.Address = address;
+            responseAddress.city = city;
+            responseAddress.state = state;
+            responseAddress.postalCode = postalCode;
+            responseAddress.country = country;
+            await responseAddress.save();
         }
         return res.status(200).json({
             success: true,
             message: "Address saved successfully.",
-            address
+            address:responseAddress
         });
     } catch (error) {
         console.error(error);
@@ -355,28 +355,23 @@ exports.getAddress = async (req, res) => {
 
 exports.updateProfile = async (req , res) =>{
     try{
-        const{Name , email,phoneNo } = req.body;
+        const{Name,phoneNo ,email} = req.body;
         if(!email){
             return res.status(400).json({
                 success:false,
                 message:'provide email please'
             })
         }
-        const user = await User.findOne({ email });
-
-        if (!user) {
+        const userNeedToUpdate = await User.findOne({email:email});
+         if (!userNeedToUpdate) {
             return res.status(404).json({
                 success: false,
-                message: 'User not found with the given email'
+                message: 'User not found.',
             });
         }
-
-        // Update the user's profile
-        user.Name = Name || user.Name;
-        user.phoneNo = phoneNo || user.phoneNo;
-
-        const updatedUser = await user.save();
-
+        userNeedToUpdate.Name = Name || userNeedToUpdate.Name;
+        userNeedToUpdate.phoneNo = phoneNo || userNeedToUpdate.phoneNo;
+        const updatedUser = await userNeedToUpdate.save();
         return res.json({
             success: true,
             message: "Profile updated successfully",

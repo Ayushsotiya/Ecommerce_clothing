@@ -92,7 +92,7 @@ const NavBar = () => {
             <div className="relative group">
               <button className="focus:outline-none">
                 {user.image ? (
-                  <Link to={user.type === 'Admin' ? ("dashboard/admin/profile") : ("dashboard/profile")}>
+                  <Link to={user.type === 'Admin' ? ("/dashboard/admin/profile") : ("/dashboard/profile")}>
                     <img
                       src={user.image}
                       alt="Profile"

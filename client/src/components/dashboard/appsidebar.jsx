@@ -59,11 +59,6 @@ const adminItems = {
       url: "/dashboard/admin/orders",
       icon: ShoppingCart,
     },
-    {
-      title: "Customers",
-      url: "/dashboard/admin/customer",
-      icon: UsersRound,
-    },
   ],
 };
 

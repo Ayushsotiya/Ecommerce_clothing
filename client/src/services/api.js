@@ -8,7 +8,8 @@ export const auth = {
     RESETPASSWORD_API: BASE_URL + 'auth/resetpassword',
     CHANGEPASSWORD_API: BASE_URL + 'auth/changepassword',
     ADDADDRESS_API: BASE_URL + 'auth/addaddress',
-    GETADDRESS_API: BASE_URL + 'auth/getaddress'
+    GETADDRESS_API: BASE_URL + 'auth/getaddress',
+    PROFILEUPDATE_API:BASE_URL +'auth/updateProfile'
 }
 
 export const category = {

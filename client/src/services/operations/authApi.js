@@ -3,9 +3,10 @@ import { apiConnector } from "../apiConnector";
 import { auth } from "../api";
 import { toast } from "react-hot-toast"
 import { setLoading, setToken, setSignUpData } from "../../slice/authSlice";
-import { setUser } from "../../slice/profileSlice";
+import { setUser,setAddress } from "../../slice/profileSlice";
 
-const { SENTOTP_API,
+const {
+    SENTOTP_API,
     SIGNUP_API,
     LOGIN_API,
     CHANGEPASSWORD_API,
@@ -38,7 +39,7 @@ export function signup(phoneNo, Name, email, password, confirmPassword, otp, nav
 }
 
 export function sendOtp(email, navigate) {
-    
+
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
@@ -70,8 +71,10 @@ export function login(email, password, navigate) {
             if (!response.data.success) {
                 throw new Error(response.data.message);
             }
+            console.log(response);
             dispatch(setToken(response.data.token));
             dispatch(setUser(response.data.response));
+            dispatch(setAddress(response.data.response.address));
             toast.success("Login Successfully")
             response.data.response.type === "Admin" ? (navigate("/dashboard/admin/profile")) : (navigate("/dashboard/profile"));
         }
@@ -80,7 +83,7 @@ export function login(email, password, navigate) {
             toast.error("Could Not Login");
         }
         dispatch(setLoading(false))
-        
+
     }
 }
 
@@ -150,17 +153,28 @@ export async function changePassword(token, formData) {
     }
 }
 
-export async function addAddress(houseNo, streetAndAddress, city, state, postalCode, country) {
-    try {
-        const response = await apiConnector("POST", ADDADDRESS_API, { houseNo, streetAndAddress, city, state, postalCode, country })
-        if (!response.data.success) {
-            throw new Error(response.data.message);
-
+export function addAddress(data,token) {
+    return async (dispatch) => {
+        try {
+            const response = await apiConnector("POST", "http://localhost:4000/api/v1/auth/addaddress", {
+                houseNo: data.houseNo,
+                street: data.street,
+                address: data.Address,
+                city: data.city,
+                state: data.state,
+                postalCode: data.pincode, 
+                country: data.country,
+            },{ Authorization: `Bearer ${token}` })
+            if (!response.data.success) {
+                throw new Error(response.data.message)
+            }
+            
+            dispatch(setAddress(response.data.address));
+            toast.success("Address updated successfully")
+        } catch (error) {
+            console.error("Add Address Error:", error.message)
+            toast.error("Failed to update address")
         }
-        toast('address updated');
-    } catch (error) {
-        console.log(error.message);
-        toast("Cant change the or update the address");
     }
 }
 
@@ -178,22 +192,26 @@ export async function getAddress(token) {
     }
 }
 
-export  function profileUpdate(data){
-    return async (dispatach)=>{
-        try{
-        const Name =data.name;
-        const email = data.email;
-        const phoneNo =data.phoneNo
-           const response = await apiConnector("POST" ,PROFILEUPDATE_API,{Name, email,phoneNo});
-           if(!response.data.success){
-             throw new Error("Can update the profile data");
-           }
-           console.log("RESPONSE OF THE PROFILE UPDATE DATA =>",response);
-           toast('profile data is updated');
-        }catch(error){
+//Working api
+export function profileUpdate(data, token) {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        try {
+            console.log('hello')
+            const Name = data.name;
+            const email = data.email;
+            const phoneNo = data.phoneNo
+            const response = await apiConnector("POST", PROFILEUPDATE_API, { Name, email, phoneNo }, { Authorization: `Bearer ${token}` });
+            if (!response.data.success) {
+                throw new Error("Can update the profile data");
+            }
+            console.log("RESPONSE OF THE PROFILE UPDATE DATA =>", response);
+            dispatch(setUser(response.data.user));
+            toast('profile data is updated');
+        } catch (error) {
             console.log(error.message);
             toast("Cant update the profile data");
         }
-        dispatach(setLoading(true));
+        dispatch(setLoading(false));
     }
 }

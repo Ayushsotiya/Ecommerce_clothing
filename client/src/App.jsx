@@ -16,7 +16,6 @@ import PrivateRoute from "./components/auth/PrivateRoute"
 import Profile from './components/dashboard/profile';
 import Footer from "@/components/common/Footer"
 import Analysis from './components/dashboard/admin/Analysis';
-import Customer from "./components/dashboard/admin/Customer"
 import Orders from "./components/dashboard/admin/Orders"
 import OrderHistory from "./components/dashboard/user/OrderHistory"
 import Products from "./components/dashboard/admin/Products"
@@ -57,7 +56,6 @@ function App() {
             <>
               <Route path="admin/profile" element={<Profile />}></Route>
               <Route path="admin/analytics" element={<Analysis />}></Route>
-              <Route path="admin/customer" element={<Customer />}></Route>
               <Route path="admin/orders" element={<Orders />}></Route>
               <Route path="admin/products" element={<Products />}></Route>
               <Route path="admin/category" element={<Category />}></Route>

@@ -5,7 +5,11 @@ const addressSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    streetAndAddress:{
+    street:{
+        type:String,
+        trim:true,
+    },
+    Address:{
         type:String,
         trim:true,
     },

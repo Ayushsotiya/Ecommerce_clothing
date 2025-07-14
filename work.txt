@@ -1,0 +1,4 @@
+
+1->> have to add buy button in the detailed product page
+
+2->> orders page need to be fixed;

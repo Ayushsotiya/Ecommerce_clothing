@@ -29,6 +29,7 @@ export async function createOrder (productIds, token, navigate, userDetails,disp
         toast.error("RazorPay SDK failed to load");
         return;
       }
+      console.log("0")
       const response = await apiConnector("POST", CREATEORDER_API, {products:productIds}, {
         Authorization: `Bearer ${token}`,
       });
@@ -36,12 +37,13 @@ export async function createOrder (productIds, token, navigate, userDetails,disp
       if (!response.data.success) {
         throw new Error(response.data.message);
       }
+      console.log("1");
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: response.data.data.amount,
         currency: "INR",
         name: "EzyBuyy",
-        description: "Pay & Checkout this Course, Upgrade your DSA Skill",
+        description: "Pay ",
         image: logo,
         order_id: response.data.data.id,
         handler: function (response) {
@@ -55,10 +57,10 @@ export async function createOrder (productIds, token, navigate, userDetails,disp
           color: "#000000",
         },
       };
-
+      console.log("2");
       const razorpayObject = new window.Razorpay(options);
       razorpayObject.open();
-
+      console.log("3");
       razorpayObject.on("payment.failed", function (response) {
         console.log(response);
         alert("This step of Payment Failed");

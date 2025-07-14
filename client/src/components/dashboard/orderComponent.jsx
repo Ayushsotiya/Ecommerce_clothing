@@ -1,54 +1,58 @@
-  import React, { useEffect, useState } from "react";
-  import { apiConnector } from "../../services/apiConnector";
-  const OrderComponent = ({ orders, userType }) => {
-    const [statusMap, setStatusMap] = useState({});
-    const updateOrderStatus = async (status, orderId) => {
-      try {
-        const response = await apiConnector("POST", "http://localhost:4000/api/v1/order/update" , { status, orderId });
-        if (!response) {
-          throw new Error("FAILED TO UPDATE THE ORDER FIX IT ");
-        }
-        console.log("RESPONSE OF ORDER_UPDATE IS ->>>", response);
-      } catch (error) {
-        console.log("FAILED TO UPDATE THE ORDER");
+import React, { useEffect, useState } from "react";
+import { apiConnector } from "../../services/apiConnector";
+
+const OrderComponent = ({ orders, userType }) => {
+  const [statusMap, setStatusMap] = useState({});
+
+  const updateOrderStatus = async (status, orderId) => {
+    try {
+      const response = await apiConnector("POST", "http://localhost:4000/api/v1/order/update", { status, orderId });
+      if (!response) {
+        throw new Error("FAILED TO UPDATE THE ORDER FIX IT ");
       }
+      console.log("RESPONSE OF ORDER_UPDATE IS ->>>", response);
+    } catch (error) {
+      console.log("FAILED TO UPDATE THE ORDER");
     }
+  };
 
-    return (
-      <div className="p-6 mt-10 overflow-x-auto">
-        <h1 className="text-3xl font-bold mb-8 text-white tracking-tight">
-          All Orders
-        </h1>
+  return (
+    <div className="p-6 mt-10 overflow-x-auto">
+      <h1 className="text-3xl font-bold mb-8 text-white tracking-tight">
+        All Orders
+      </h1>
 
-        <div className="min-w-[900px]">
-          {/* Table Headers */}
-          <div className="grid grid-cols-6 gap-6 bg-zinc-800 text-white px-6 py-3 rounded-t-md font-semibold text-sm uppercase">
-            <div>Order ID</div>
-            <div>Product</div>
-            <div>Description</div>
-            <div>Image</div>
-            <div>Amount</div>
-            <div>Status</div>
-          </div>
+      <div className="min-w-[1000px]">
+        {/* Table Headers */}
+        <div className="grid grid-cols-8 gap-6 bg-zinc-800 text-white px-6 py-3 rounded-t-md font-semibold text-sm uppercase">
+          <div>Order ID</div>
+          <div>Product</div>
+          <div>Description</div>
+          <div>Image</div>
+          <div>User Name</div>
+          <div>Address</div>
+          <div>Amount</div>
+          <div>Status</div>
+        </div>
 
-          {/* Orders */}
-          {orders.map((order, index) => (
+        {/* Orders */}
+        {orders.map((order, index) => {
+          const user = order.user;
+          const address = user?.address;
+
+          return (
             <div
               key={order._id || index}
-              className={`grid grid-cols-6 gap-6 px-6 py-4 items-center ${index % 2 === 0 ? "bg-zinc-900" : "bg-zinc-950"
+              className={`grid grid-cols-8 gap-6 px-6 py-4 items-center ${index % 2 === 0 ? "bg-zinc-900" : "bg-zinc-950"
                 } text-white hover:bg-zinc-800 transition-colors duration-200`}
             >
               <div className="truncate">{order._id}</div>
 
-              {/* Showing only the first item for simplicity, loop if needed */}
-              <div className="truncate">
-                {order.items[0]?.product?.name || "N/A"}
-              </div>
+              {/* First Product */}
+              <div className="truncate">{order.items[0]?.product?.name || "N/A"}</div>
+              <div className="truncate">{order.items[0]?.product?.description || "N/A"}</div>
 
-              <div className="truncate">
-                {order.items[0]?.product?.description || "N/A"}
-              </div>
-
+              {/* Product Image */}
               <div>
                 <img
                   src={order.items[0]?.product?.images?.[0]}
@@ -57,46 +61,69 @@
                 />
               </div>
 
-              <div className="font-medium text-green-400">
-                ₹{order.totalAmount}
-              </div>
+              {/* User Name */}
+              <div className="font-medium text-green-400">{user?.Name || "N/A"}</div>
 
+              {/* Address */}
+              <div className="text-sm text-zinc-300 leading-snug">
+                {address
+                  ? <>
+                      <div>{user.address.houseNo}, {user.address.street}</div>
+                      <div>{user.address.address}</div>
+                      <div>{user.address.city}, {user.address.state} - {user.address.postalCode}</div>
+                    </>
+                  : "N/A"}
+              </div>  
 
+              {/* Amount */}
+              <div className="font-medium">₹{order.totalAmount}</div>
+
+              {/* Status */}
               {userType === "Admin" ? (
                 <div className="flex gap-2">
-                  <select value={statusMap[order._id] || order.status} onChange={(e) =>
-                    setStatusMap((prev) => ({
-                      ...prev,
-                      [order._id]: e.target.value,
-                    }))
-                  } className="bg-black text-white">
+                  <select
+                    value={statusMap[order._id] || order.status}
+                    onChange={(e) =>
+                      setStatusMap((prev) => ({
+                        ...prev,
+                        [order._id]: e.target.value,
+                      }))
+                    }
+                    className="bg-black text-white rounded-md px-2 py-1"
+                  >
                     <option>Delivered</option>
                     <option>Shipped</option>
                     <option>Cancelled</option>
                     <option>Pending</option>
                   </select>
-                  <button onClick={() => updateOrderStatus(statusMap[order._id] || order.status, order._id)} className="bg-primary rounded-md p-1 text-black">Save</button>
+                  <button
+                    onClick={() => updateOrderStatus(statusMap[order._id] || order.status, order._id)}
+                    className="bg-primary rounded-md p-1 text-black"
+                  >
+                    Save
+                  </button>
                 </div>
               ) : (
                 <div
-                  className={` py-1 w-fit px-6 rounded-full text-sm text-center font-medium ${order.status === "Delivered"
+                  className={`py-1 w-fit px-4 rounded-full text-sm text-center font-medium ${order.status === "Delivered"
                     ? "bg-green-700 text-green-100"
                     : order.status === "Pending"
                       ? "bg-yellow-600 text-yellow-100"
                       : "bg-red-600 text-red-100"
                     }`}
-                ></div>
+                >
+                  {order.status}
+                </div>
               )}
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
-    );
-  };
+    </div>
+  );
+};
 
-  export default OrderComponent;
-
-
+export default OrderComponent;
 
 
 // {orders?.length > 0 ? (

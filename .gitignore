@@ -38,4 +38,5 @@ coverage/
 *.lcov
 
 
-*.txt
+/ai-services/models/
+

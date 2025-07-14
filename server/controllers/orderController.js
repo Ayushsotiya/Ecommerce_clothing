@@ -6,7 +6,17 @@ exports.fetchOrders = async (req, res) => {
     try {
         const response = await Order.find({})
             .populate('user')
-            .populate('items.product')
+            .populate({
+                path: 'user',
+                populate: {
+                    path: 'address',
+                    model: 'Address'
+                }
+            })
+            .populate({
+                path: 'items.product',
+                model: 'Product'
+            })
             .exec();
         if (!response) {
             console.log("Cant find the response theek karo");
@@ -71,14 +81,14 @@ exports.updateOrderDetails = async (req, res) => {
         }
         const order = await Order.findByIdAndUpdate(orderId, {
             status: status
-        }, {new:true});
+        }, { new: true });
 
         if (!order) {
             return res.status(404).json({
-              success: false,
-              message: "Order not found",
+                success: false,
+                message: "Order not found",
             });
-          }
+        }
         return res.status(200).json({
             success: true,
             message: "status updated",

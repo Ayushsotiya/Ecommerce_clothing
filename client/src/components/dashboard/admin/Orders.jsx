@@ -19,7 +19,7 @@ const Orders = () => {
             Authorization: `Bearer ${token}`,
           }
         );
-
+        
         if (!res.data.success) {
           throw new Error("Can't fetch orders");
         }

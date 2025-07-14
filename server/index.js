@@ -13,7 +13,10 @@ const fileUpload = require("express-fileupload");
 const paymentRoute = require("./routes/paymentRoutes");
 const orderRoute = require('./routes/OrderRoutes');
 const contactRoute =require('./routes/contactRoute');
+const aiRoute = require('./routes/aiRoutes');
 const PORT = process.env.PORT;
+const { exec } = require('child_process');
+
 
 
 app.use(fileUpload({
@@ -31,6 +34,7 @@ app.use('/api/v1/ratingandreview',ratingAndReviewRoute);
 app.use('/api/v1/payment',paymentRoute);
 app.use('/api/v1/order',orderRoute);
 app.use('/api/v1/contact',contactRoute);
+app.use('/api/v1/ai',aiRoute);
 connectDB();
 cloudinaryConnect();
 
@@ -41,4 +45,8 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+});
+
+exec('where python', (err, stdout) => {
+  console.log('[DEBUG] Python path used by Node:', stdout);
 });

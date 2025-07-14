@@ -1,0 +1,7 @@
+transformers
+torch
+torchvision
+keybert
+sentence-transformers
+pillow
+requests

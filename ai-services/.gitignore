@@ -1,0 +1,9 @@
+# Ignore model folders
+/models/
+/models/blip/
+/models/clip/
+/models/sbert/
+/models/**
+
+# Optional: Ignore HuggingFace cache if used
+~/.cache/huggingface/

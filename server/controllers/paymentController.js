@@ -6,8 +6,10 @@ const Order = require('../models/Order');
 const crypto = require("crypto");
 require("dotenv").config();
 
+// working
 exports.createPayment = async (req, res) => {
     try {
+        console.log("1")
         let { products } = req.body;
         if (!Array.isArray(products)) {
             if (typeof products === "object") {
@@ -19,6 +21,7 @@ exports.createPayment = async (req, res) => {
                 });
             }
         }
+         console.log("2")
         let total_amount = 0;
         for (const product_id of products) {
             let prod;
@@ -33,6 +36,7 @@ exports.createPayment = async (req, res) => {
                 return res.status(500).json({ success: false, message: error.message });
             }
         }
+         console.log("3")
         try {
             const option = {
                 amount: total_amount * 100, // amount in paise
@@ -50,7 +54,9 @@ exports.createPayment = async (req, res) => {
                 success: false,
                 message: "Failed to make payment",
             });
+          
         }
+         
     } catch (error) {
         console.log(error);
         return res.status(500).json({

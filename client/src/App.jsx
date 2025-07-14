@@ -23,7 +23,7 @@ import Category from "./components/dashboard/admin/Category"
 import Address from './components/dashboard/user/Address';
 import { useSelector } from 'react-redux';
 import ResetPassword from "./pages/ResetPasssword"
-import AddProduct from "./components/dashboard/admin/createProduct"
+import AddProduct from "./components/dashboard/admin/productUpload/createProduct"
 import { useLocation } from "react-router-dom";
 import { fetchAllProducts } from "./services/operations/productApi";
 import { useDispatch } from "react-redux";

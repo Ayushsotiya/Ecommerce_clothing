@@ -39,7 +39,6 @@ export function signup(phoneNo, Name, email, password, confirmPassword, otp, nav
 }
 
 export function sendOtp(email, navigate) {
-
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {

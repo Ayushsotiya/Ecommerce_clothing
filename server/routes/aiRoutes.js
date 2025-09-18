@@ -28,9 +28,9 @@ router.post('/generate', async (req, res) => {
       await img.mv(uploadPath);
       uploadedPaths.push(uploadPath);
     }
-    const pythonPath = 'C:/Python313/python.exe';
+    const pythonPath = path.join(__dirname, '../../ai-services/venv/Scripts/python.exe');
     const pythonScript = path.join(__dirname, '../../ai-services/descriptiongen.py');
-    const command = `"${pythonPath}" "${pythonScript}" ${uploadedPaths.join(' ')}`; 
+    const command = `"${pythonPath}" "${pythonScript}" ${uploadedPaths.join(' ')}`;
 
     exec(command, (err, stdout, stderr) => {
       // Clean up

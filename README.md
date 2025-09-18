@@ -7,3 +7,12 @@ descriptions from uploaded images.
 • Integrated Cloudinary for optimized image uploads and real-time previews in product listings and management.
 • Integrated Razorpay for secure online transactions at checkout.
 • Used Redux Toolkit for efficient state management ensuring responsive UX and fast product discovery.
+
+
+
+
+ai services command
+
+    cd ai-services
+     python -m venv venv
+     ./venv/Scripts/activate

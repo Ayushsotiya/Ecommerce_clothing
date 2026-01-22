@@ -37,3 +37,7 @@ export const cart = {
     DELETECART_API:BASE_URL+'cart/delete',
     ADDCART_API:BASE_URL+"car/add-product",
 }
+
+export const ai = {
+    CHAT_API: BASE_URL + 'ai/chat',
+}

@@ -29,14 +29,15 @@ import { fetchAllProducts } from "./services/operations/productApi";
 import { useDispatch } from "react-redux";
 import ProductDetails from "./pages/Product";
 import AddToCart from "./components/common/AddToCart"
+import { ChatBot } from "./components/chatbot"
 function App() {
   const { user } = useSelector((state) => state.profile)
   const dispatch = useDispatch();
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
-    useEffect(() => {
-      dispatch(fetchAllProducts())
-    }, [])
+  useEffect(() => {
+    dispatch(fetchAllProducts())
+  }, [])
   return (
     <>
       {!isDashboardRoute && <NavBar className="fixed" />}
@@ -44,13 +45,13 @@ function App() {
         <Route path="/" element={<Home></Home>}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/contact" element={<Contact />}></Route>
-        <Route path="/shop" element={<Shop/>}></Route>
+        <Route path="/shop" element={<Shop />}></Route>
         <Route path="/login" element={<OpenRoute><Login /></OpenRoute>}></Route>
         <Route path="/signup" element={<OpenRoute><Signup /></OpenRoute>}></Route>
         <Route path="/verify-email" element={< OpenRoute> <Otp /></OpenRoute>}></Route>
         <Route path="/reset-password" element={<OpenRoute><ResetPassword /></OpenRoute>}></Route>
-        <Route path= '/product/:id' element = {<ProductDetails/>}></Route>
-        <Route path="/cart" element={<PrivateRoute><AddToCart/></PrivateRoute>}></Route>
+        <Route path='/product/:id' element={<ProductDetails />}></Route>
+        <Route path="/cart" element={<PrivateRoute><AddToCart /></PrivateRoute>}></Route>
         <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>}>
           {user?.type === 'Admin' ? (
             <>
@@ -73,6 +74,9 @@ function App() {
         <Route path="*" element={<NotFound />}></Route>
       </Routes>
       {!isDashboardRoute && <Footer />}
+
+      {/* AI Chatbot - Floating Widget */}
+      <ChatBot />
     </>
   )
 }

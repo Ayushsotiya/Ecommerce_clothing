@@ -13,6 +13,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@langchain/core": "^1.1.16",
+    "@langchain/google-genai": "^2.1.11",
+    "@langchain/langgraph": "^1.1.1",
     "bcrypt": "^5.1.1",
     "child_process": "^1.0.2",
     "cloudinary": "^2.5.1",
@@ -28,6 +31,7 @@
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "otp-generator": "^4.0.1",
-    "razorpay": "^2.9.5"
+    "razorpay": "^2.9.5",
+    "zod": "^4.3.5"
   }
 }

@@ -13,7 +13,86 @@ const ChatMessage = ({ message }) => {
         });
     };
 
-    // Parse markdown-like formatting (bold, bullet points)
+    // Check if URL is an image (handles file extensions and Cloudinary URLs)
+    const isImageUrl = (url) => {
+        // Check for common image extensions
+        const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?.*)?$/i;
+        // Check for Cloudinary or other image CDN patterns
+        const cloudinaryPattern = /cloudinary\.com|res\.cloudinary|\/image\/upload/i;
+        return imageExtensions.test(url) || cloudinaryPattern.test(url);
+    };
+
+    // Check if it's a relative product URL
+    const isProductUrl = (url) => {
+        return /^\/product\/[a-zA-Z0-9]+/.test(url);
+    };
+
+    // Render a URL appropriately (as image or link)
+    const renderUrl = (url, key, isRelative = false) => {
+        const trimmedUrl = url.trim();
+        
+        if (isImageUrl(trimmedUrl)) {
+            return (
+                <img
+                    key={key}
+                    src={trimmedUrl}
+                    alt="Product"
+                    className="max-w-full h-auto rounded-lg my-2 max-h-40 object-cover"
+                    onError={(e) => {
+                        e.target.style.display = 'none';
+                    }}
+                />
+            );
+        }
+        
+        // Product link (relative URL)
+        if (isRelative || isProductUrl(trimmedUrl)) {
+            return (
+                <a
+                    key={key}
+                    href={trimmedUrl}
+                    className="text-blue-600 hover:text-blue-800 underline"
+                >
+                    View Product
+                </a>
+            );
+        }
+        
+        // Regular external link
+        return (
+            <a
+                key={key}
+                href={trimmedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline break-all"
+            >
+                {trimmedUrl}
+            </a>
+        );
+    };
+
+    // Process text to find and render URLs (both full and relative)
+    const processUrls = (text, keyPrefix) => {
+        if (typeof text !== 'string') return text;
+        
+        // Combined regex: matches full URLs (https://...) OR relative product URLs (/product/...)
+        const urlRegex = /(https?:\/\/[^\s]+|\/product\/[a-zA-Z0-9]+)/g;
+        const parts = text.split(urlRegex);
+        
+        if (parts.length === 1) return text;
+        
+        return parts.map((part, idx) => {
+            // Check if this part is a URL
+            if (/^https?:\/\//.test(part) || /^\/product\//.test(part)) {
+                const isRelative = /^\/product\//.test(part);
+                return renderUrl(part, `${keyPrefix}-url-${idx}`, isRelative);
+            }
+            return part;
+        });
+    };
+
+    // Parse markdown-like formatting (bold, bullet points, URLs, images)
     const formatContent = (content) => {
         if (!content) return null;
 
@@ -26,12 +105,13 @@ const ChatMessage = ({ message }) => {
             const processedLine = parts.map((part, partIndex) => {
                 if (part.startsWith('**') && part.endsWith('**')) {
                     return (
-                        <strong key={partIndex} className="font-semibold">
-                            {part.slice(2, -2)}
+                        <strong key={`bold-${index}-${partIndex}`} className="font-semibold">
+                            {processUrls(part.slice(2, -2), `bold-${index}-${partIndex}`)}
                         </strong>
                     );
                 }
-                return part;
+                // Process URLs in regular text
+                return processUrls(part, `text-${index}-${partIndex}`);
             });
 
             // Check if line starts with bullet point indicators
@@ -51,7 +131,7 @@ const ChatMessage = ({ message }) => {
             {/* Avatar */}
             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isUser
                 ? 'bg-gray-200'
-                : 'bg-gradient-to-r from-violet-600 to-indigo-600'
+                : 'bg-gradient-to-r from-yellow-600 to-indigo-600'
                 }`}>
                 {isUser ? (
                     <User className="w-4 h-4 text-gray-700" />
@@ -63,7 +143,7 @@ const ChatMessage = ({ message }) => {
             {/* Message Bubble */}
             <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'}`}>
                 <div className={`rounded-2xl px-4 py-3 ${isUser
-                    ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-tr-sm'
+                    ? 'bg-gradient-to-r from-yellow-600 to-indigo-600 text-white rounded-tr-sm'
                     : isError
                         ? 'bg-red-50 border border-red-200 text-red-600 rounded-tl-sm'
                         : 'bg-gray-100 text-gray-900 rounded-tl-sm'

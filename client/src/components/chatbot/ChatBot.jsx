@@ -113,7 +113,7 @@ const ChatBot = () => {
                 onClick={() => dispatch(toggleChat())}
                 className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 ${isOpen
                     ? 'bg-red-500 hover:bg-red-600 rotate-0'
-                    : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700'
+                    : 'bg-gradient-to-r from-yellow-600 to-indigo-600 hover:from-yellow-700 hover:to-indigo-700'
                     }`}
                 aria-label={isOpen ? 'Close chat' : 'Open chat'}
             >
@@ -126,8 +126,8 @@ const ChatBot = () => {
                 {/* Pulse animation when closed */}
                 {!isOpen && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-4 w-4 bg-violet-500"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-4 w-4 bg-yellow-500"></span>
                     </span>
                 )}
             </button>
@@ -140,7 +140,7 @@ const ChatBot = () => {
                     }`}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-violet-600 to-indigo-600 p-4 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-yellow-600 to-indigo-600 p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                             <Sparkles className="w-5 h-5 text-white" />
@@ -163,8 +163,8 @@ const ChatBot = () => {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
                     {messages.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-center px-6">
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-violet-600/20 to-indigo-600/20 flex items-center justify-center mb-4">
-                                <Sparkles className="w-8 h-8 text-violet-500" />
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-600/20 to-indigo-600/20 flex items-center justify-center mb-4">
+                                <Sparkles className="w-8 h-8 text-yellow-500" />
                             </div>
                             <h4 className="text-gray-900 font-medium mb-2">How can I help you?</h4>
                             <p className="text-gray-500 text-sm mb-6">
@@ -198,12 +198,12 @@ const ChatBot = () => {
                             ))}
                             {isLoading && (
                                 <div className="flex items-start gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-yellow-600 to-indigo-600 flex items-center justify-center flex-shrink-0">
                                         <Sparkles className="w-4 h-4 text-white" />
                                     </div>
                                     <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
                                         <div className="flex items-center gap-2">
-                                            <Loader2 className="w-4 h-4 animate-spin text-violet-500" />
+                                            <Loader2 className="w-4 h-4 animate-spin text-yellow-500" />
                                             <span className="text-sm text-gray-500">Thinking...</span>
                                         </div>
                                     </div>
@@ -224,13 +224,13 @@ const ChatBot = () => {
                             onChange={(e) => setInputMessage(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Type your message..."
-                            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all"
+                            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 focus:border-yellow-500 transition-all"
                             disabled={isLoading}
                         />
                         <button
                             type="submit"
                             disabled={!inputMessage.trim() || isLoading}
-                            className="p-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:from-violet-700 hover:to-indigo-700 transition-all transform active:scale-95"
+                            className="p-3 rounded-xl bg-gradient-to-r from-yellow-600 to-indigo-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:from-yellow-700 hover:to-indigo-700 transition-all transform active:scale-95"
                         >
                             {isLoading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />

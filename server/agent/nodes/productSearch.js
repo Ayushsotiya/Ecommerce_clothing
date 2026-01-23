@@ -60,10 +60,11 @@ JSON response:`;
             if (jsonMatch) {
                 jsonStr = jsonMatch[1];
             }
-            // Also handle if response just starts with JSON
+            // Extract JSON object by finding matching braces
             const jsonStartIndex = jsonStr.indexOf('{');
-            if (jsonStartIndex > 0) {
-                jsonStr = jsonStr.substring(jsonStartIndex);
+            const jsonEndIndex = jsonStr.lastIndexOf('}');
+            if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
+                jsonStr = jsonStr.substring(jsonStartIndex, jsonEndIndex + 1);
             }
             toolCall = JSON.parse(jsonStr);
         } catch (parseError) {

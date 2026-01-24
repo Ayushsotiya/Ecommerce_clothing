@@ -4,6 +4,7 @@ const Address = require("../models/Address");
 const Otp = require("../models/Otp");
 const jwt = require('jsonwebtoken');
 const otpGenerator = require('otp-generator');
+const crypto = require('crypto');
 const { sendMail } = require("../utils/mailsend");
 const  {otpTemplate } = require("../mailTemplates/signupTemplate");
 const { response, application } = require("express");
@@ -190,14 +191,14 @@ exports.resetPasswordToken = async (req, res) => {
         }
         const user = await User.findOne({ email });
         if (!user) {
-            return res.staus.json({
+            return res.status(400).json({
                 success: false,
                 message: "user not found with the email"
             })
         }
         const token = crypto.randomUUID();
-        const updatedDetails = await User.findOneAndUpdate({ email: email }, { token: token, resetPasswordExpire: Date.now() + 5 * 60 * 1000 }, { new: true });
-        const url = `http://localhost:4000/update-password/${token}`
+        const updatedDetails = await User.findOneAndUpdate({ email: email }, { token: token, resetPasswordExpires: Date.now() + 5 * 60 * 1000 }, { new: true });
+        const url = `http://localhost:5173/reset-password/${token}`
         await sendMail(email, `link to reset password for ${process.env.COMPANY_NAME}`, `reset password link ${url}`);
         res.status(200).json({
             success: true,
@@ -236,7 +237,7 @@ exports.resetPassword = async (req, res) => {
             })
         }
 
-        if (userDetails.resetPasswordExpires < Date.now) {
+        if (userDetails.resetPasswordExpires < Date.now()) {
             return res.status(500).json({
                 success: false,
                 message: "token is expired"

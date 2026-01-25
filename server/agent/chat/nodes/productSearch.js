@@ -6,7 +6,7 @@
 const { ChatGoogleGenerativeAI } = require('@langchain/google-genai');
 const { PRODUCT_SEARCH_PROMPT } = require('../prompts');
 const { executeTool } = require('../tools');
-const { geminiConfig } = require('../../Config/gemini');
+const { geminiConfig } = require('../../../Config/gemini');
 const { extractContent } = require('../utils');
 
 /**

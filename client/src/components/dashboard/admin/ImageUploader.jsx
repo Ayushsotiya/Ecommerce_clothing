@@ -17,7 +17,10 @@ const ImageUploader = ({ onImagesChange, error }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: { 
+      "image/*": [],
+      "video/*": [] 
+    },
     multiple: true,
   });
 
@@ -32,8 +35,8 @@ const ImageUploader = ({ onImagesChange, error }) => {
         <input {...getInputProps()} />
         <p className="text-center text-white">
           {isDragActive
-            ? "Drop the images here..."
-            : "Drag & drop images here, or click to select"}
+            ? "Drop the files here..."
+            : "Drag & drop images or videos here, or click to select"}
         </p>
       </div>
 
@@ -44,13 +47,21 @@ const ImageUploader = ({ onImagesChange, error }) => {
         {imagePreviews.map((file, index) => (
           <div
             key={index}
-            className="w-full h-32 overflow-hidden rounded-lg border border-zinc-600"
+            className="w-full h-32 overflow-hidden rounded-lg border border-zinc-600 relative bg-black"
           >
-            <img
-              src={URL.createObjectURL(file)}
-              alt={`preview-${index}`}
-              className="w-full h-full object-cover"
-            />
+            {file.type.startsWith('video/') ? (
+              <video
+                src={URL.createObjectURL(file)}
+                className="w-full h-full object-cover"
+                controls
+              />
+            ) : (
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`preview-${index}`}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
         ))}
       </div>

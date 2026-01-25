@@ -3,7 +3,7 @@
  * Fetches the status of a specific order
  */
 
-const Order = require('../../models/Order');
+const Order = require('../../../models/Order');
 const mongoose = require('mongoose');
 
 /**

@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@langchain/core": "^1.1.16",
     "@langchain/google-genai": "^2.1.11",
     "@langchain/langgraph": "^1.1.1",
@@ -25,6 +26,7 @@
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
     "jsonwebtoken": "^9.0.2",
+    "mime-types": "^3.0.2",
     "mongodb": "^6.13.0",
     "mongoose": "^8.10.0",
     "multer": "^2.0.1",

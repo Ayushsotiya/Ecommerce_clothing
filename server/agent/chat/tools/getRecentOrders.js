@@ -3,7 +3,7 @@
  * Fetches recent orders for the authenticated customer
  */
 
-const Order = require('../../models/Order');
+const Order = require('../../../models/Order');
 const mongoose = require('mongoose');
 
 /**

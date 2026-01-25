@@ -5,7 +5,7 @@
 
 const { ChatGoogleGenerativeAI } = require('@langchain/google-genai');
 const { SUPERVISOR_PROMPT } = require('../prompts');
-const { geminiConfig } = require('../../Config/gemini');
+const { geminiConfig } = require('../../../Config/gemini');
 const { extractContent } = require('../utils');
 
 /**

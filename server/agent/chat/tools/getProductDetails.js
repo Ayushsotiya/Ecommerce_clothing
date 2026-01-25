@@ -3,7 +3,7 @@
  * Fetches detailed information about a specific product
  */
 
-const Product = require('../../models/Product');
+const Product = require('../../../models/Product');
 const mongoose = require('mongoose');
 
 /**

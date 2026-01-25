@@ -84,6 +84,8 @@ router.post('/chat',
     }
 );
 
+const { analyzeProductImages } = require('../agent');
+
 router.post('/generate', async (req, res) => {
   if (!req.files || !req.files.images) {
     return res.status(400).json({ error: 'No images uploaded' });
@@ -93,44 +95,48 @@ router.post('/generate', async (req, res) => {
     ? req.files.images
     : [req.files.images];
 
+  const uploadsDir = path.join(__dirname, '../../uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+  }
+
+  const uploadedPaths = [];
+
   try {
-    // ✅ Ensure the uploads directory exists
-    const uploadsDir = path.join(__dirname, '../../uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir);
-    }
-
-    const uploadedPaths = [];
-
+    // Save uploaded files
     for (const img of images) {
       const uploadPath = path.join(uploadsDir, img.name);
       await img.mv(uploadPath);
       uploadedPaths.push(uploadPath);
     }
-    const pythonPath = path.join(__dirname, '../../ai-services/venv/Scripts/python.exe');
-    const pythonScript = path.join(__dirname, '../../ai-services/descriptiongen.py');
-    const command = `"${pythonPath}" "${pythonScript}" ${uploadedPaths.join(' ')}`;
 
-    exec(command, (err, stdout, stderr) => {
-      // Clean up
-      for (const filePath of uploadedPaths) {
-        fs.unlink(filePath, () => {});
-      }
+    // Use Gemini agent for analysis
+    const result = await analyzeProductImages(uploadedPaths);
 
-      if (err) {
-        console.error("Python Error:", stderr);
-        return res.status(500).json({ error: 'Failed to run AI script', details: stderr });
-      }
+    // Clean up files
+    for (const filePath of uploadedPaths) {
+      fs.unlink(filePath, () => {});
+    }
 
-      try {
-        const output = JSON.parse(stdout);
-        res.json(output);
-      } catch (parseErr) {
-        res.status(500).json({ error: 'Failed to parse AI output', details: parseErr.toString() });
-      }
+    if (!result.success) {
+        return res.status(500).json({ error: result.error });
+    }
+
+    // Frontend expects { description, category, tags }
+    res.json({
+        description: result.description,
+        category: result.category,
+        tags: result.tags
     });
+
   } catch (err) {
-    return res.status(500).json({ error: 'Server error during file handling', details: err.toString() });
+    // Clean up on error
+    for (const filePath of uploadedPaths) {
+        if (fs.existsSync(filePath)) {
+            fs.unlink(filePath, () => {});
+        }
+    }
+    return res.status(500).json({ error: 'Server error during analysis', details: err.message });
   }
 });
 

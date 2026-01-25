@@ -110,7 +110,7 @@ const AddProduct = () => {
 
       {step === 1 && (
         <>
-          <Label className="mb-10">Product Images</Label>
+          <Label className="mb-10">Product Media (Images/Video)</Label>
           <ImageUploader
             error={errors.images?.message}
             onImagesChange={(files) => {

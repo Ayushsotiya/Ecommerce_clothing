@@ -3,8 +3,8 @@
  * Searches for products by name, category, tags, or price range
  */
 
-const Product = require('../../models/Product');
-const Category = require('../../models/Category');
+const Product = require('../../../models/Product');
+const Category = require('../../../models/Category');
 
 /**
  * Tool definition for LangChain

@@ -13,14 +13,14 @@ import NotFound from './pages/NotFound';
 import DashBoard from './pages/DashBoard';
 import OpenRoute from "./components/auth/OpenRoute"
 import PrivateRoute from "./components/auth/PrivateRoute"
-import Profile from './components/dashboard/profile';
+import Profile from './components/dashboard/Profile';
 import Footer from "@/components/common/Footer"
 import Analysis from './components/dashboard/admin/Analysis';
 import Orders from "./components/dashboard/admin/Orders"
 import OrderHistory from "./components/dashboard/user/OrderHistory"
 import Products from "./components/dashboard/admin/Products"
 import Category from "./components/dashboard/admin/Category"
-import Address from './components/dashboard/user/Address';
+import Address from './components/dashboard/user/address';
 import { useSelector } from 'react-redux';
 import ResetPassword from "./pages/ResetPasssword"
 import AddProduct from "./components/dashboard/admin/productUpload/createProduct"

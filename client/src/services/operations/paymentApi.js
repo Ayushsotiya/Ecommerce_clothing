@@ -22,7 +22,7 @@ function loadScript(src) {
 
 
 
-export async function createOrder (productIds, token, navigate, userDetails,dispatch) {
+export async function createOrder (productIds, token, navigate, userDetails, dispatch, negotiationTokens = {}) {
     try {
       const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
       if (!res) {
@@ -30,7 +30,10 @@ export async function createOrder (productIds, token, navigate, userDetails,disp
         return;
       }
       console.log("0")
-      const response = await apiConnector("POST", CREATEORDER_API, {products:productIds}, {
+      const response = await apiConnector("POST", CREATEORDER_API, {
+        products: productIds,
+        negotiationTokens
+      }, {
         Authorization: `Bearer ${token}`,
       });
 
@@ -47,7 +50,7 @@ export async function createOrder (productIds, token, navigate, userDetails,disp
         image: logo,
         order_id: response.data.data.id,
         handler: function (response) {
-          verifyPayment({ ...response, products: productIds }, token, navigate,dispatch);
+          verifyPayment({ ...response, products: productIds, negotiationTokens }, token, navigate, dispatch);
         },
         prefill: {
           name: userDetails.firstName,

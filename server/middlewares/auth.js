@@ -31,7 +31,7 @@ exports.auth = async (req, res, next) => {
 
 exports.isUser = async (req, res, next) => {
     try {
-        if (req.user.type !== 'User') {
+        if (req.user.type !== 'User' && req.user.type !== 'Admin') {
             return res.status(401).json({
                 success: false,
                 message: 'This Is A Protected Route For Students'

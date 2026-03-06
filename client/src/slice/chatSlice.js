@@ -6,6 +6,8 @@ const initialState = {
     conversationId: null,
     isLoading: false,
     error: null,
+    negotiatedPrices: {}, // { productId: { price, token, productName, originalPrice, discount, expiresAt } }
+    preFilledMessage: null,
 };
 
 export const chatSlice = createSlice({
@@ -38,6 +40,20 @@ export const chatSlice = createSlice({
             state.conversationId = null;
             state.error = null;
         },
+        addNegotiatedPrice: (state, action) => {
+            const { productId, price, token, productName, originalPrice, discount, expiresAt } = action.payload;
+            state.negotiatedPrices[productId] = { price, token, productName, originalPrice, discount, expiresAt };
+        },
+        removeNegotiatedPrice: (state, action) => {
+            const productId = action.payload;
+            delete state.negotiatedPrices[productId];
+        },
+        clearNegotiatedPrices: (state) => {
+            state.negotiatedPrices = {};
+        },
+        setPreFilledMessage: (state, action) => {
+            state.preFilledMessage = action.payload;
+        },
     },
 });
 
@@ -50,6 +66,10 @@ export const {
     setLoading,
     setError,
     clearChat,
+    addNegotiatedPrice,
+    removeNegotiatedPrice,
+    clearNegotiatedPrices,
+    setPreFilledMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

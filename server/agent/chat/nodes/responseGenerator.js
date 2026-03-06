@@ -4,7 +4,7 @@
  */
 
 const { ChatGoogleGenerativeAI } = require('@langchain/google-genai');
-const { RESPONSE_GENERATOR_PROMPT } = require('../prompts');
+const { RESPONSE_GENERATOR_PROMPT, NEGOTIATION_RESPONSE_PROMPT } = require('../prompts');
 const { geminiConfig } = require('../../../Config/gemini');
 const { extractContent } = require('../utils');
 
@@ -40,6 +40,13 @@ const responseGeneratorNode = async (state) => {
             };
         }
 
+        // Handle authentication required for negotiation
+        if (state.currentIntent === 'price_negotiation' && !state.userId) {
+            return {
+                finalResponse: "I'd love to negotiate a great deal for you! But first, you'll need to log in so I can apply the special price to your account. Please sign in and try again. 🔐"
+            };
+        }
+
         // Handle general chat (no tools needed)
         if (state.currentIntent === 'general_chat' && state.toolResults.length === 0) {
             const generalPrompt = `${RESPONSE_GENERATOR_PROMPT}
@@ -67,25 +74,29 @@ Response:`;
             return `Tool: ${tr.tool}\nResult: ${JSON.stringify(tr.result, null, 2)}`;
         }).join('\n\n');
 
+        // Use negotiation-specific prompt for price negotiation
+        const isNegotiation = state.currentIntent === 'price_negotiation';
+        const basePrompt = isNegotiation ? NEGOTIATION_RESPONSE_PROMPT : RESPONSE_GENERATOR_PROMPT;
+
         // Generate response based on tool results
-        const responsePrompt = `${RESPONSE_GENERATOR_PROMPT}
+        const responsePrompt = `${basePrompt}
 
 Customer message: "${latestMessage.content}"
 
 Tool results:
 ${toolResultsText}
 
-Based on the tool results, create a helpful and friendly response for the customer.
-If products were found, list them clearly with names and prices.
-If orders were found, list them with status and date.
-If nothing was found, be helpful and suggest alternatives.
+${isNegotiation
+    ? 'Based on the negotiation results, create a response. If a deal was accepted, clearly state the negotiated price and that it\'s valid for a limited time. If it\'s a counter-offer, present it persuasively.'
+    : 'Based on the tool results, create a helpful and friendly response for the customer.\nIf products were found, list them clearly with names and prices.\nIf orders were found, list them with status and date.\nIf nothing was found, be helpful and suggest alternatives.'}
 
 Response:`;
 
         const response = await model.invoke(responsePrompt);
         const contentText = extractContent(response);
 
-        return {
+        // Build the response object
+        const responseObj = {
             finalResponse: contentText,
             messages: [{
                 role: 'assistant',
@@ -93,6 +104,33 @@ Response:`;
             }],
             tokenCount: contentText.length
         };
+
+        // Attach negotiation metadata if a deal was accepted
+        if (isNegotiation && state.negotiationData) {
+            const negData = state.negotiationData;
+            if (negData.status === 'accepted' || negData.status === 'final_offer_accepted') {
+                responseObj.negotiationData = {
+                    status: negData.status,
+                    productId: negData.productId,
+                    productName: negData.productName,
+                    originalPrice: negData.originalPrice,
+                    negotiatedPrice: negData.negotiatedPrice,
+                    discount: negData.discount,
+                    token: negData.token,
+                    expiresAt: negData.expiresAt,
+                };
+            } else {
+                responseObj.negotiationData = {
+                    status: negData.status,
+                    productId: negData.productId,
+                    productName: negData.productName,
+                    originalPrice: negData.originalPrice,
+                    counterOffer: negData.counterOffer,
+                };
+            }
+        }
+
+        return responseObj;
 
     } catch (error) {
         console.error('[ResponseGenerator] Error:', error);

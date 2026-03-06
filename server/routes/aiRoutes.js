@@ -3,9 +3,14 @@ const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 // Import agent modules
 const { processChat, rateLimiter, getRemainingRequests } = require('../agent');
 const { auth } = require('../middlewares/auth');
+const { validateToken, getUserDeals, startNegotiation } = require('../agent/chat/negotiation');
+const Product = require('../models/Product');
 
 const router = express.Router();
 
@@ -29,10 +34,24 @@ const router = express.Router();
 router.post('/chat', 
     // Optional auth - allows both guests and authenticated users
     (req, res, next) => {
-        // Try to authenticate, but don't require it
-        const authHeader = req.headers.authorization;
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            return auth(req, res, next);
+        try {
+            // Try to authenticate, but don't require it
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                const token = authHeader.replace('Bearer ', '');
+                if (token && token !== 'null' && token !== 'undefined') {
+                    try {
+                        const decode = jwt.verify(token, process.env.JWT_SECRET);
+                        req.user = decode;
+                    } catch (err) {
+                        // Token invalid/expired - proceed as guest silently
+                        // This prevents "Token Is Invalid" error from blocking chat
+                        console.log('[AI Chat] Token verification failed, proceeding as guest:', err.message);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('[AI Chat] Auth middleware error:', error);
         }
         next();
     },
@@ -70,7 +89,8 @@ router.post('/chat',
                 usage: {
                     tokensUsed: result.tokenCount,
                     remainingRequests: remaining.perMinute
-                }
+                },
+                negotiation: result.negotiation || null
             });
 
         } catch (error) {
@@ -83,6 +103,151 @@ router.post('/chat',
         }
     }
 );
+
+/**
+ * POST /api/v1/ai/negotiate
+ * Direct negotiation from cart - bypasses LLM supervisor
+ * Immediately applies a discount to the product
+ * 
+ * Body:
+ * - productId: string (required) - The product's MongoDB _id
+ * - userOffer: number (optional) - Specific price the user wants
+ * 
+ * Response:
+ * - success: boolean
+ * - negotiation: { status, negotiatedPrice, originalPrice, discount, token, productId, productName, expiresAt, message }
+ */
+router.post('/negotiate', auth, async (req, res) => {
+    try {
+        const { productId, userOffer } = req.body;
+        const userId = req.user.id;
+
+        if (!productId) {
+            return res.status(400).json({
+                success: false,
+                message: 'productId is required'
+            });
+        }
+
+        // Fetch product directly by ID (guaranteed match, no text search)
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+        console.log(`[Negotiate] Direct negotiation for "${product.name}" (₹${product.price}) by user ${userId}`);
+
+        // Start negotiation - immediately returns a deal
+        const result = startNegotiation(
+            userId,
+            product._id.toString(),
+            product.name,
+            product.price,
+            userOffer || null
+        );
+
+        console.log(`[Negotiate] Result: ${result.status} - ₹${result.negotiatedPrice} (${result.discount}% off)`);
+
+        return res.status(200).json({
+            success: true,
+            negotiation: {
+                status: result.status,
+                negotiatedPrice: result.negotiatedPrice,
+                originalPrice: result.originalPrice,
+                discount: result.discount,
+                token: result.token,
+                productId: result.productId,
+                productName: result.productName,
+                expiresAt: result.expiresAt,
+                message: result.message,
+            }
+        });
+
+    } catch (error) {
+        console.error('[Negotiate] Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to process negotiation'
+        });
+    }
+});
+
+/**
+ * POST /api/v1/ai/negotiation/validate
+ * Validate a negotiation token
+ */
+router.post('/negotiation/validate', auth, async (req, res) => {
+    try {
+        const { token, productId } = req.body;
+        const userId = req.user.id;
+
+        if (!token || !productId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Token and productId are required'
+            });
+        }
+
+        const deal = validateToken(token, userId, productId);
+        if (!deal) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or expired negotiation token'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            deal: {
+                productId: deal.productId,
+                productName: deal.productName,
+                originalPrice: deal.originalPrice,
+                negotiatedPrice: deal.negotiatedPrice,
+                discount: deal.discount,
+                expiresAt: deal.expiresAt
+            }
+        });
+    } catch (error) {
+        console.error('Negotiation validation error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to validate negotiation token'
+        });
+    }
+});
+
+/**
+ * GET /api/v1/ai/negotiation/deals
+ * Get all active deals for the current user
+ */
+router.get('/negotiation/deals', auth, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const deals = getUserDeals(userId);
+
+        return res.status(200).json({
+            success: true,
+            deals: deals.map(d => ({
+                productId: d.productId,
+                productName: d.productName,
+                originalPrice: d.originalPrice,
+                negotiatedPrice: d.negotiatedPrice,
+                discount: d.discount,
+                token: d.token,
+                expiresAt: d.expiresAt
+            }))
+        });
+    } catch (error) {
+        console.error('Get deals error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to get deals'
+        });
+    }
+});
 
 const { analyzeProductImages } = require('../agent');
 

@@ -7,8 +7,11 @@ import {
     setConversationId,
     setLoading,
     setError,
-    clearChat
+    clearChat,
+    addNegotiatedPrice,
+    setPreFilledMessage
 } from '@/slice/chatSlice';
+import { applyNegotiatedPrice } from '@/slice/cartSlice';
 import { sendChatMessage } from '@/services/operations/chatApi';
 import ChatMessage from './ChatMessage';
 
@@ -16,6 +19,7 @@ const ChatBot = () => {
     const dispatch = useDispatch();
     const { isOpen, messages, conversationId, isLoading, error } = useSelector((state) => state.chat);
     const { token } = useSelector((state) => state.auth);
+    const { cart } = useSelector((state) => state.cart);
     const [inputMessage, setInputMessage] = useState('');
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
@@ -33,6 +37,16 @@ const ChatBot = () => {
             setTimeout(() => inputRef.current?.focus(), 100);
         }
     }, [isOpen]);
+
+    // Handle pre-filled message
+    const { preFilledMessage } = useSelector((state) => state.chat);
+    useEffect(() => {
+        if (preFilledMessage) {
+            setInputMessage(preFilledMessage);
+            // Clear it from state so it doesn't persist
+            dispatch(setPreFilledMessage(null));
+        }
+    }, [preFilledMessage, dispatch]);
 
     const handleSendMessage = async (e) => {
         e?.preventDefault();
@@ -68,8 +82,37 @@ const ChatBot = () => {
                     role: 'assistant',
                     content: result.response,
                     timestamp: new Date().toISOString(),
-                    usage: result.usage
+                    usage: result.usage,
+                    negotiation: result.negotiation || null
                 }));
+
+                // Handle accepted negotiation
+                if (result.negotiation && 
+                    (result.negotiation.status === 'accepted' || result.negotiation.status === 'final_offer_accepted')) {
+                    const neg = result.negotiation;
+                    
+                    // Store in chat state
+                    dispatch(addNegotiatedPrice({
+                        productId: neg.productId,
+                        price: neg.negotiatedPrice,
+                        token: neg.token,
+                        productName: neg.productName,
+                        originalPrice: neg.originalPrice,
+                        discount: neg.discount,
+                        expiresAt: neg.expiresAt
+                    }));
+                    
+                    // Apply to cart if product is in cart
+                    const cartItem = cart.find(item => item._id === neg.productId);
+                    if (cartItem) {
+                        dispatch(applyNegotiatedPrice({
+                            productId: neg.productId,
+                            negotiatedPrice: neg.negotiatedPrice,
+                            negotiationToken: neg.token,
+                            discount: neg.discount
+                        }));
+                    }
+                }
             } else {
                 dispatch(setError(result.error));
                 // Add error message

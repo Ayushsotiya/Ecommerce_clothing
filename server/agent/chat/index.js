@@ -8,6 +8,7 @@ const { rateLimiter, getRemainingRequests, RATE_LIMIT_CONFIG } = require('../sha
 
 // In-memory conversation store (for multi-turn support)
 const conversationStore = new Map();
+const { getUserActiveSession } = require('./negotiation/store');
 
 // Conversation expiry time (30 minutes)
 const CONVERSATION_TTL = 30 * 60 * 1000;
@@ -93,8 +94,24 @@ const processChat = async (message, userId = null, conversationId = null) => {
             toolResults: [],
             tokenCount: 0,
             error: null,
-            finalResponse: null
+            finalResponse: null,
+            finalResponse: null,
+            negotiationData: null
         };
+
+        // Hydrate negotiation data if user has an active session
+        if (userId) {
+            const activeSession = getUserActiveSession(userId);
+            if (activeSession) {
+                console.log(`[Agent] Found active negotiation session for user ${userId}, hydrating state`);
+                initialState.negotiationData = {
+                    productId: activeSession.productId,
+                    productName: activeSession.productName,
+                    originalPrice: activeSession.originalPrice,
+                    negotiatedPrice: activeSession.negotiatedPrice
+                };
+            }
+        }
 
         console.log(`[Agent] Processing message for conversation: ${currentConversationId}`);
 
@@ -118,7 +135,8 @@ const processChat = async (message, userId = null, conversationId = null) => {
             response: result.finalResponse || "I'm not sure how to help with that. Could you please rephrase?",
             conversationId: currentConversationId,
             intent: result.currentIntent,
-            tokenCount: result.tokenCount || 0
+            tokenCount: result.tokenCount || 0,
+            negotiation: result.negotiationData || null
         };
 
     } catch (error) {

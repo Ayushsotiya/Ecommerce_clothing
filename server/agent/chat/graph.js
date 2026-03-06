@@ -11,7 +11,8 @@ const {
     routeByIntent,
     productSearchNode,
     orderManagementNode,
-    responseGeneratorNode
+    responseGeneratorNode,
+    negotiationNode
 } = require('./nodes');
 
 /**
@@ -52,6 +53,15 @@ const AgentStateAnnotation = Annotation.Root({
     finalResponse: Annotation({
         reducer: (_, update) => update,
         default: () => null
+    }),
+    negotiationData: Annotation({
+        reducer: (current, update) => {
+            // Merge update into current, or return update if current is null
+            if (!current) return update;
+            if (!update) return current;
+            return { ...current, ...update };
+        },
+        default: () => null
     })
 });
 
@@ -67,6 +77,7 @@ const buildAgentGraph = () => {
     workflow.addNode("supervisor", supervisorNode);
     workflow.addNode("productSearch", productSearchNode);
     workflow.addNode("orderManagement", orderManagementNode);
+    workflow.addNode("negotiation", negotiationNode);
     workflow.addNode("responseGenerator", responseGeneratorNode);
 
     // Set entry point
@@ -79,6 +90,7 @@ const buildAgentGraph = () => {
         {
             "productSearch": "productSearch",
             "orderManagement": "orderManagement",
+            "negotiation": "negotiation",
             "responseGenerator": "responseGenerator"
         }
     );
@@ -86,6 +98,7 @@ const buildAgentGraph = () => {
     // Add edges from specialist nodes to response generator
     workflow.addEdge("productSearch", "responseGenerator");
     workflow.addEdge("orderManagement", "responseGenerator");
+    workflow.addEdge("negotiation", "responseGenerator");
 
     // Add edge from response generator to END
     workflow.addEdge("responseGenerator", END);

@@ -4,13 +4,16 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const crypto = require("crypto");
+const { validateToken, markTokenUsed } = require('../agent/chat/negotiation');
 require("dotenv").config();
 
 // working
 exports.createPayment = async (req, res) => {
     try {
         console.log("1")
-        let { products } = req.body;
+        let { products, negotiationTokens } = req.body;
+        const userId = req.user?.id;
+
         if (!Array.isArray(products)) {
             if (typeof products === "object") {
                 products = [products];
@@ -22,6 +25,12 @@ exports.createPayment = async (req, res) => {
             }
         }
          console.log("2")
+
+        // Parse negotiation tokens if provided
+        const tokenMap = negotiationTokens && typeof negotiationTokens === 'object' ? negotiationTokens : {};
+        const validatedDeals = {};
+        const usedTokens = [];
+
         let total_amount = 0;
         for (const product_id of products) {
             let prod;
@@ -30,7 +39,21 @@ exports.createPayment = async (req, res) => {
                 if (!prod) {
                     return res.status(404).json({ success: false, message: `Could not find the product: ${product_id}` });
                 }
-                total_amount += prod.price;
+
+                // Check for negotiated price
+                let price = prod.price;
+                const token = tokenMap[product_id];
+                if (token && userId) {
+                    const deal = validateToken(token, userId, product_id);
+                    if (deal) {
+                        price = deal.negotiatedPrice;
+                        validatedDeals[product_id] = deal;
+                        usedTokens.push(token);
+                        console.log(`[Payment] Using negotiated price for ${prod.name}: ₹${prod.price} → ₹${price}`);
+                    }
+                }
+
+                total_amount += price;
             } catch (error) {
                 console.log(error);
                 return res.status(500).json({ success: false, message: error.message });
@@ -45,9 +68,16 @@ exports.createPayment = async (req, res) => {
             };
             const paymentResponse = await instance.orders.create(option);
             console.log("created");
+
+            // Mark negotiation tokens as used
+            for (const token of usedTokens) {
+                markTokenUsed(token);
+            }
+
             return res.json({
                 success: true,
                 data: paymentResponse,
+                negotiatedPrices: Object.keys(validatedDeals).length > 0 ? validatedDeals : undefined,
             });
         } catch (error) {
             return res.status(501).json({
@@ -68,7 +98,7 @@ exports.createPayment = async (req, res) => {
 
 exports.verifyPayment = async (req, res) => {
     console.log("verification started in the backend");
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, products } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, products, negotiationTokens } = req.body;
     const userId = req.user.id;
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !products || !userId) {
         return res.status(400).json({
@@ -80,13 +110,13 @@ exports.verifyPayment = async (req, res) => {
     hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
     const generated_signature = hmac.digest('hex');
     if (razorpay_signature === generated_signature) {
-        return await addProductToCustomer(products, userId, res);
+        return await addProductToCustomer(products, userId, res, negotiationTokens);
     } else {
         return res.json({ success: false, message: "Payment verification failed" });
     }
 };
 
-const addProductToCustomer = async (products, userId, res) => {
+const addProductToCustomer = async (products, userId, res, negotiationTokens = {}) => {
     if (!products || !userId) {
         return res.status(400).json({ success: false, message: "Please provide products and User ID" });
     }
@@ -102,8 +132,19 @@ const addProductToCustomer = async (products, userId, res) => {
                 product.userbought.push(userId);
                 await product.save();
             }
-            orderItems.push({ product: product._id, price: product.price });
-            totalAmount += product.price;
+
+            // Use negotiated price if a valid token exists
+            let price = product.price;
+            const token = negotiationTokens && negotiationTokens[product_id];
+            if (token) {
+                const deal = validateToken(token, userId, product_id);
+                if (deal) {
+                    price = deal.negotiatedPrice;
+                }
+            }
+
+            orderItems.push({ product: product._id, price: price });
+            totalAmount += price;
         }
         const order = await Order.create({
             user: userId,

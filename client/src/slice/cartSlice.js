@@ -35,7 +35,10 @@ const updateLocalStorage = (state) => {
 // Helper function to recalculate totals
 const recalculateTotals = (state) => {
     state.totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0)
-    state.total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    state.total = state.cart.reduce((sum, item) => {
+        const price = item.negotiatedPrice || item.price
+        return sum + (price * item.quantity)
+    }, 0)
 }
 
 const cartSlice = createSlice({
@@ -123,6 +126,29 @@ const cartSlice = createSlice({
             localStorage.removeItem("total")
             localStorage.removeItem("totalItems")
         },
+        applyNegotiatedPrice: (state, action) => {
+            const { productId, negotiatedPrice, negotiationToken, discount } = action.payload
+            const index = state.cart.findIndex((item) => item._id === productId)
+            if (index >= 0) {
+                state.cart[index].negotiatedPrice = negotiatedPrice
+                state.cart[index].negotiationToken = negotiationToken
+                state.cart[index].discount = discount
+                recalculateTotals(state)
+                updateLocalStorage(state)
+                toast.success(`Negotiated price applied! Save ₹${(state.cart[index].price - negotiatedPrice) * state.cart[index].quantity}`)
+            }
+        },
+        removeNegotiatedPrice: (state, action) => {
+            const productId = action.payload
+            const index = state.cart.findIndex((item) => item._id === productId)
+            if (index >= 0) {
+                delete state.cart[index].negotiatedPrice
+                delete state.cart[index].negotiationToken
+                delete state.cart[index].discount
+                recalculateTotals(state)
+                updateLocalStorage(state)
+            }
+        },
     },
 })
 
@@ -133,7 +159,9 @@ export const {
     incrementQuantity,
     decrementQuantity,
     resetCart, 
-    setLoading 
+    setLoading,
+    applyNegotiatedPrice,
+    removeNegotiatedPrice
 } = cartSlice.actions
 
 export default cartSlice.reducer

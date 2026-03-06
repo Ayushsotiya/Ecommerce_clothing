@@ -40,4 +40,7 @@ export const cart = {
 
 export const ai = {
     CHAT_API: BASE_URL + 'ai/chat',
+    NEGOTIATE_API: BASE_URL + 'ai/negotiate',
+    VALIDATE_NEGOTIATION_API: BASE_URL + 'ai/negotiation/validate',
+    GET_DEALS_API: BASE_URL + 'ai/negotiation/deals',
 }

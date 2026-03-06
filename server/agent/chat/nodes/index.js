@@ -7,11 +7,13 @@ const { supervisorNode, routeByIntent } = require('./supervisor');
 const { productSearchNode } = require('./productSearch');
 const { orderManagementNode } = require('./orderManagement');
 const { responseGeneratorNode } = require('./responseGenerator');
+const { negotiationNode } = require('./negotiation');
 
 module.exports = {
     supervisorNode,
     routeByIntent,
     productSearchNode,
     orderManagementNode,
-    responseGeneratorNode
+    responseGeneratorNode,
+    negotiationNode
 };

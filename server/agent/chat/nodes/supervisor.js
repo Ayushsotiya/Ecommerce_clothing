@@ -40,6 +40,28 @@ const supervisorNode = async (state) => {
                 currentIntent: 'general_chat'
             };
         }
+        
+        // CHECK FOR ACTIVE NEGOTIATION (Deterministic Routing)
+        // If user has an active negotiation session and message looks like a price/deal, 
+        // route directly to negotiation without LLM classification
+        if (state.negotiationData && state.negotiationData.productId) {
+            const msg = latestMessage.content.toLowerCase().trim();
+            // Check for numbers (price), or negotiation keywords
+            const hasNumber = /\d+/.test(msg);
+            const negotiationKeywords = ['deal', 'ok', 'okay', 'accept', 'offer', 'price', 'yes', 'no', 'reject'];
+            const isNegotiationRelated = negotiationKeywords.some(kw => msg.includes(kw));
+            
+            // Avoid capturing order queries as negotiation just because they have numbers
+            const isOrderQuery = ['order', 'track', 'status', 'shipping', 'delivery'].some(kw => msg.includes(kw));
+            
+            if ((hasNumber || isNegotiationRelated) && !isOrderQuery) {
+                console.log(`[Supervisor] Active session detected & message matches negotiation pattern. forcing intent: price_negotiation`);
+                return {
+                    currentIntent: 'price_negotiation',
+                    tokenCount: 0
+                };
+            }
+        }
 
         // Create classification prompt
         const classificationPrompt = `${SUPERVISOR_PROMPT}
@@ -55,7 +77,9 @@ Intent category:`;
 
         // Parse intent from response
         let intent = 'general_chat';
-        if (intentRaw.includes('product_search') || intentRaw.includes('product')) {
+        if (intentRaw.includes('price_negotiation') || intentRaw.includes('negotiat') || intentRaw.includes('bargain')) {
+            intent = 'price_negotiation';
+        } else if (intentRaw.includes('product_search') || intentRaw.includes('product')) {
             intent = 'product_search';
         } else if (intentRaw.includes('order_query') || intentRaw.includes('order')) {
             intent = 'order_query';
@@ -98,6 +122,12 @@ const routeByIntent = (state) => {
                 return 'responseGenerator';  // Will handle auth message
             }
             return 'orderManagement';
+        case 'price_negotiation':
+            // Check if user is authenticated for negotiation
+            if (!state.userId) {
+                return 'responseGenerator';  // Will handle auth message
+            }
+            return 'negotiation';
         case 'general_chat':
         default:
             return 'responseGenerator';

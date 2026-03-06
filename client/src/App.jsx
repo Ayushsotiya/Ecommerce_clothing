@@ -14,8 +14,8 @@ import DashBoard from './pages/DashBoard';
 import OpenRoute from "./components/auth/OpenRoute"
 import PrivateRoute from "./components/auth/PrivateRoute"
 import Profile from './components/dashboard/Profile';
-import Footer from "@/components/common/Footer"
-import Analysis from './components/dashboard/admin/Analysis';
+import Footer from "./components/common/Footer.jsx"
+import Analysis from "@/components/dashboard/admin/Analysis.jsx";
 import Orders from "./components/dashboard/admin/Orders"
 import OrderHistory from "./components/dashboard/user/OrderHistory"
 import Products from "./components/dashboard/admin/Products"

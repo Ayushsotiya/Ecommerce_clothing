@@ -44,3 +44,8 @@ export const ai = {
     VALIDATE_NEGOTIATION_API: BASE_URL + 'ai/negotiation/validate',
     GET_DEALS_API: BASE_URL + 'ai/negotiation/deals',
 }
+
+export const analytic = {
+    GETMONTHLYREVEMUE : BASE_URL + 'analytic/monthlyRevenue',
+    GETMONTHLYPURCHASE : BASE_URL + 'analytic/monthlyPurchase'
+}

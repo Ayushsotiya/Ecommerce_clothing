@@ -19,7 +19,7 @@ export async function createCategory(name,token){
            }
            toast.success("Category created");
         
-           return response;
+           return response
         }catch(error){
             console.log(error.message);
             toast.dismiss("couldddd not Category created");

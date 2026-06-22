@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { TrendingUp } from "lucide-react";
+import { useEffect } from "react";
+import {getMonthlyRevenue} from '../../../services/operations/analytic';
 import {
   CartesianGrid,
   Line,
@@ -8,7 +10,7 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-
+import {useSelector} from 'react-redux'
 import {
   Card,
   CardContent,
@@ -18,15 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// Sample Revenue Data (in INR)
-const revenueData = [
-  { month: "January", revenue: 45000 },
-  { month: "February", revenue: 52000 },
-  { month: "March", revenue: 48000 },
-  { month: "April", revenue: 61000 },
-  { month: "May", revenue: 55000 },
-  { month: "June", revenue: 67000 },
-];
+
 
 // Currency Formatter for INR
 const formatINR = (value) => {
@@ -51,6 +45,20 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 export function RevenueChart() {
+
+
+   const {token} = useSelector((state)=>state.auth) 
+   const [monthlyRevnue,SetRevnue] = useState([]);
+  useEffect(() => {
+    const fetchData = async()=>{
+      const data = await getMonthlyRevenue(token);
+      console.log("2111",data);
+      SetRevnue(data);
+    }
+    fetchData();
+}, [])
+
+
   return (
     <Card className="bg-[#1c1c1c] border border-white text-white p-4">
       <CardHeader className="pb-2">
@@ -61,7 +69,7 @@ export function RevenueChart() {
       </CardHeader>
       <CardContent className="pt-0">
         <LineChart
-          data={revenueData}
+          data={monthlyRevnue}
           width={300}
           height={180}
           margin={{ left: 8, right: 8 }}

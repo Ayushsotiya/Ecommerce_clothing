@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ShoppingCart } from "lucide-react";
 import {
   Bar,
@@ -8,7 +8,7 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-
+import{getMonthlyPurchase} from '../../../services/operations/analytic'
 import {
   Card,
   CardContent,
@@ -17,16 +17,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 
-// Sample Data
-const purchaseData = [
-  { month: "January", purchases: 1240 },
-  { month: "February", purchases: 1450 },
-  { month: "March", purchases: 1180 },
-  { month: "April", purchases: 1680 },
-  { month: "May", purchases: 1520 },
-  { month: "June", purchases: 1890 },
-];
 
 // Tooltip content
 const CustomTooltip = ({ active, payload }) => {
@@ -42,6 +35,16 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 export function PurchasesChart() {
+  const {token} = useSelector((state)=>state.auth);
+  const [purchaseData,setData] = useState([]);
+ console.log("after fetching the data " ,purchaseData);
+  useEffect(()=>{
+     const fetchData = async()=>{
+       const response  = await getMonthlyPurchase(token);
+       setData(response);
+     }  
+     fetchData();
+  },[])
   return (
     <Card className="bg-[#1c1c1c] border-white text-white p-4">
       <CardHeader className="pb-2">

@@ -9,6 +9,7 @@ const authRoute = require("./routes/authRoutes");
 const productRoute = require("./routes/productRoutes")
 const categoryRoute = require("./routes/categoryRoutes")
 const ratingAndReviewRoute = require("./routes/ratingAndReviewRoute");
+const analyticRoute =require('./routes/analyticRoute');
 const fileUpload = require("express-fileupload");
 const paymentRoute = require("./routes/paymentRoutes");
 const orderRoute = require('./routes/OrderRoutes');
@@ -35,6 +36,7 @@ app.use('/api/v1/payment',paymentRoute);
 app.use('/api/v1/order',orderRoute);
 app.use('/api/v1/contact',contactRoute);
 app.use('/api/v1/ai',aiRoute);
+app.use('/api/v1/analytic',analyticRoute);
 connectDB();
 cloudinaryConnect();
 

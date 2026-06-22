@@ -4,7 +4,8 @@ import { apiConnector } from '../apiConnector';
 
 const {
     GETMONTHLYREVEMUE,
-    GETMONTHLYPURCHASE 
+    GETMONTHLYPURCHASE,
+    GETTOTALCUSTOMERS
 } = analytic;
 
 
@@ -37,5 +38,19 @@ export const getMonthlyPurchase = async(token)=>{
     }catch(error){
        console.log(error);
         toast.error('Could not get the monthly purchases');
+    }
+}
+
+export const getTotalCustomers = async(token)=>{
+    try{
+        const response = await apiConnector("GET",GETTOTALCUSTOMERS,{},{Authorization:`Bearer ${token}`});
+        if(!response.data.success){
+            throw new Error("Could not find total customers");
+        }
+        toast.success('Total customers fetched');
+        return response.data.data;
+    }catch(error){
+        console.log(error);
+        toast.error('Could not get total customers');
     }
 }

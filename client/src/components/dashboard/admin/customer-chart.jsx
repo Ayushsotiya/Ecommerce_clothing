@@ -1,13 +1,13 @@
 "use client"
 
-import React from "react"
-import { TrendingUp } from "lucide-react"
+import React, { useState, useEffect } from "react"
+import { Users } from "lucide-react"
+import { useSelector } from "react-redux"
 import {
   RadialBarChart,
   RadialBar,
   PolarRadiusAxis,
   Label,
-  Tooltip,
 } from "recharts"
 
 import {
@@ -19,32 +19,53 @@ import {
   CardFooter,
 } from "@/components/ui/card"
 
-// Sample Data
-const chartData = [{ month: "January", desktop: 1260, mobile: 570 }]
-const totalVisitors = chartData[0].desktop + chartData[0].mobile
+import { getTotalCustomers } from "../../../services/operations/analytic"
 
 export function ChartRadialStacked() {
+  const { token } = useSelector((state) => state.auth)
+  const [totalCustomers, setTotalCustomers] = useState(0)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getTotalCustomers(token)
+      if (data) {
+        setTotalCustomers(data.total)
+      }
+    }
+    fetchData()
+  }, [token])
+
+  const chartData = [
+    {
+      name: "Customers",
+      value: totalCustomers,
+      fill: "#ffffff",
+    },
+  ]
+
   return (
     <Card className="bg-[#1f1f1f] text-white border-white w-full max-w-md mx-auto">
       <CardHeader className="items-center pb-0">
-        <CardTitle className="text-white">Radial Chart - Stacked</CardTitle>
+        <CardTitle className="text-white flex items-center gap-2">
+          <Users className="h-4 w-4" /> Total Customers
+        </CardTitle>
         <CardDescription className="text-white opacity-70">
-          January - June 2024
+          Real-time registered customer count
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 justify-center items-center pb-0">
         <RadialBarChart
           width={250}
           height={150}
-          innerRadius={60}
-          outerRadius={100}
+          innerRadius={70}
+          outerRadius={90}
           data={chartData}
           startAngle={180}
           endAngle={0}
         >
           <PolarRadiusAxis
             type="number"
-            domain={[0, totalVisitors]}
+            domain={[0, totalCustomers || 1]}
             tick={false}
             axisLine={false}
           >
@@ -57,16 +78,16 @@ export function ChartRadialStacked() {
                     <tspan
                       x={cx}
                       y={cy - 10}
-                      className="fill-white text-2xl font-bold"
+                      className="fill-white text-3xl font-bold"
                     >
-                      {totalVisitors.toLocaleString()}
+                      {totalCustomers.toLocaleString()}
                     </tspan>
                     <tspan
                       x={cx}
                       y={cy + 12}
-                      className="fill-white text-sm opacity-70"
+                      className="fill-white text-xs opacity-70"
                     >
-                      Visitors
+                      Registered
                     </tspan>
                   </text>
                 )
@@ -74,31 +95,14 @@ export function ChartRadialStacked() {
             />
           </PolarRadiusAxis>
           <RadialBar
-            dataKey="desktop"
-            stackId="a"
-            fill="#ffffff"
             background
-            cornerRadius={4}
-          />
-          <RadialBar
-            dataKey="mobile"
-            stackId="a"
-            fill="#999999"
-            cornerRadius={4}
-          />
-          <Tooltip
-            contentStyle={{ backgroundColor: "#000", borderColor: "#fff", color: "#fff" }}
-            itemStyle={{ color: "#fff" }}
+            dataKey="value"
+            cornerRadius={5}
           />
         </RadialBarChart>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm text-white">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="opacity-70 leading-none">
-          Showing total visitors for the last 6 months
-        </div>
+      <CardFooter className="justify-center text-sm text-white opacity-70 pt-0 pb-4">
+        Showing total registered platform users
       </CardFooter>
     </Card>
   )

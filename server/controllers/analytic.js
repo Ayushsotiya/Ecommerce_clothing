@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const User = require("../models/User");
 
 const monthNames = [
     "January",
@@ -99,6 +100,27 @@ exports.monthlyPurchase = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to fetch monthly purchases",
+        });
+    }
+};
+
+// =======================
+// 👥 Total Customers
+// =======================
+exports.totalCustomers = async (req, res) => {
+    try {
+        const total = await User.countDocuments({ type: "User" });
+
+        return res.status(200).json({
+            success: true,
+            message: "Total customers fetched successfully",
+            data: { total },
+        });
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch total customers",
         });
     }
 };

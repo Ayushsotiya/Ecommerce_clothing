@@ -47,5 +47,6 @@ export const ai = {
 
 export const analytic = {
     GETMONTHLYREVEMUE : BASE_URL + 'analytic/monthlyRevenue',
-    GETMONTHLYPURCHASE : BASE_URL + 'analytic/monthlyPurchase'
+    GETMONTHLYPURCHASE : BASE_URL + 'analytic/monthlyPurchase',
+    GETTOTALCUSTOMERS : BASE_URL + 'analytic/totalCustomers'
 }

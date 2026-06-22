@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: ezybuyy-server
+    ports:
+      - "4000:4000"
+    volumes:
+      # Mount the backend directory for hot-reloading
+      - ./server:/usr/src/app
+      # Do not overwrite the container's node_modules with the host's node_modules
+      - /usr/src/app/node_modules
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=4000
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: ezybuyy-client
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount the frontend directory for hot-reloading
+      - ./client:/usr/src/app
+      # Do not overwrite the container's node_modules with the host's node_modules
+      - /usr/src/app/node_modules
+    env_file:
+      - ./client/.env
+    depends_on:
+      - server

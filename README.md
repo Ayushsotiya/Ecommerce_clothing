@@ -378,23 +378,25 @@ npm install
 
 ## Setup environment variables
 
-Create `.env` file inside **server**
+Copy the provided example files into place for both backend and frontend.
 
+Unix / WSL / Git Bash:
+```bash
+cp server/.env.example server/.env
+cp client/.env.example client/.env
 ```
-PORT=5000
-MONGODB_URI=
 
-JWT_SECRET=
-
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-
-RAZORPAY_KEY_ID=
-RAZORPAY_SECRET=
-
-GEMINI_API_KEY=
+Windows PowerShell:
+```powershell
+copy server\.env.example server\.env
+copy client\.env.example client\.env
 ```
+
+The Docker Compose setup already reads these files from each service directory:
+- `server/.env`
+- `client/.env`
+
+Edit the copied `.env` files and fill in your actual credentials.
 
 ---
 

@@ -19,13 +19,15 @@ build/
 
 # === CLIENT FOLDER ===
 client/node_modules/
-client/.env*
+client/.env
+!client/.env.example
 client/dist/
 client/build/
 
 # === SERVER FOLDER ===
 server/node_modules/
-server/.env*
+server/.env
+!server/.env.example
 server/dist/
 server/build/
 
